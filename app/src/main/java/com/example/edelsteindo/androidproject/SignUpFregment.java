@@ -31,7 +31,7 @@ public class SignUpFregment extends Fragment {
      * @return A new instance of fragment SignUpFregment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SignUpFregment newInstance(String param1, String param2) {
+    public static SignUpFregment newInstance() {
         SignUpFregment fragment = new SignUpFregment();
         return fragment;
     }
