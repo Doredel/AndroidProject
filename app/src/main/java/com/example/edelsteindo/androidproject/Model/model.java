@@ -10,12 +10,14 @@ import java.util.List;
 public class model {
     public final static model instace = new model();
 
-    model(){
+    private model(){
+        this.data = new LinkedList<User>();
         this.data.add(new User("Dor Edelstein","dor_edel","123"));
         this.data.add(new User("Nevo Saporta","nevoSap","123"));
+        this.data.add(new User("Bla Bla","blab","bla"));
     }
 
-    private List<User> data = new LinkedList<User>();
+    private List<User> data;
 
     public List<User> getAllUsers(){
         return data;
