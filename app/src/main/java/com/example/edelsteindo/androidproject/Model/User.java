@@ -8,7 +8,7 @@ import android.media.Image;
 
 public class User {
 
-    private Image profilePic;
+    private String profilePicUrl;
     private String fullName;
     private String userName;
     private String password;
@@ -19,19 +19,19 @@ public class User {
         this.password = password;
     }
 
-    public User(Image profilePic, String fullName, String userName, String password) {
-        this.profilePic = profilePic;
+    public User(String profilePic, String fullName, String userName, String password) {
+        this.profilePicUrl = profilePic;
         this.fullName = fullName;
         this.userName = userName;
         this.password = password;
     }
 
-    public Image getProfilePic() {
-        return this.profilePic;
+    public String getProfilePic() {
+        return this.profilePicUrl;
     }
 
-    public void setProfilePic(Image profilePic) {
-        this.profilePic = profilePic;
+    public void setProfilePic(String profilePic) {
+        this.profilePicUrl = profilePic;
     }
 
     public String getFullName() {

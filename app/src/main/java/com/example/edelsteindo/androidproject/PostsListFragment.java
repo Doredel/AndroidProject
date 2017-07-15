@@ -103,7 +103,7 @@ public class PostsListFragment extends Fragment {
                 int pos = (int) v.getTag();
                 Student st = data.get(pos);
                 st.setCheck(!st.isCheck());
-                Model.instace.editStudent(st.getId(),st);
+                model.instace.editStudent(st.getId(),st);
             }
         }*/
 
