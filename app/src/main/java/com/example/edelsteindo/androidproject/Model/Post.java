@@ -1,21 +1,37 @@
 package com.example.edelsteindo.androidproject.Model;
 
-import android.media.Image;
-
 /**
  * Created by saportane on 27/06/2017.
  */
 
 public class Post {
+    private String id;
     private String postPicUrl;
     private int numOfLikes;
     private boolean active;
-    private String Description;
-    private User poster;
+    private String description;
+    private String user;
 
-    public Post(User poster) {
-        this.poster = poster;
+    public Post() {
     }
+
+    public String getId() {
+
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getPostPicUrl() {
+        return postPicUrl;
+    }
+
+    public void setPostPicUrl(String postPicUrl) {
+        this.postPicUrl = postPicUrl;
+    }
+
     public String getPostPic() {
         return postPicUrl;
     }
@@ -41,18 +57,18 @@ public class Post {
     }
 
     public String getDescription() {
-        return Description;
+        return description;
     }
 
     public void setDescription(String description) {
-        Description = description;
+        this.description = description;
     }
 
-    public User getPoster() {
-        return poster;
+    public String getUser() {
+        return user;
     }
 
-    public void setPoster(User poster) {
-        this.poster = poster;
+    public void setUser(String user) {
+        this.user = user;
     }
 }

@@ -7,6 +7,9 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class LoginActivity extends Activity {
 
     private Fragment fragment;
@@ -15,6 +18,7 @@ public class LoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
 
         if (savedInstanceState == null) {
             FragmentManager fragmentManager = getFragmentManager();
@@ -27,4 +31,7 @@ public class LoginActivity extends Activity {
         }
 
     }
+
+
+
 }

@@ -10,7 +10,7 @@ import java.util.List;
 public class MemModel {
     public final static MemModel instace = new MemModel();
 
-    private MemModel(){
+    public MemModel(){
         this.data = new LinkedList<User>();
         this.data.add(new User("Dor Edelstein","dor_edel","123"));
         this.data.add(new User("Nevo Saporta","nevoSap","123"));
@@ -35,7 +35,7 @@ public class MemModel {
         return data.remove(getUser(userName));
     }
 
-    public boolean EditUser(String userName, User u){
+    public boolean editUser(String userName, User u){
         int index = data.indexOf(getUser(userName));
 
         if(index != -1){
