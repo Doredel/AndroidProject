@@ -1,12 +1,12 @@
 package com.example.edelsteindo.androidproject;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 
 
 /**
@@ -57,4 +57,10 @@ public class SignUpFregment extends Fragment {
     public void onDetach() {
         super.onDetach();
     }
+
+    /**
+     * Created by saportane on 31/07/2017.
+     */
+
+   
 }
