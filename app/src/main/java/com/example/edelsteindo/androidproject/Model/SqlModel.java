@@ -18,12 +18,12 @@ public class SqlModel extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //StudentSql.onCreate(db);
+        PostSql.onCreate(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        //StudentSql.onUpgrade(db, oldVersion, newVersion);
+        PostSql.onUpgrade(db, oldVersion, newVersion);
     }
 
 }

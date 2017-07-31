@@ -72,7 +72,7 @@ public class PostSql {
     }
 
     static void removePost(SQLiteDatabase db, String id) {
-        db.execSQL("delete from "+POST_TABLE+" where "+id+"="+"'"+id+"'");
+        db.execSQL("delete from "+POST_TABLE+" where "+POST_ID+"="+"'"+id+"';");
     }
 
     static Post getPost(SQLiteDatabase db, String pstId) {
