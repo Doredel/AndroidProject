@@ -10,11 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.edelsteindo.androidproject.Model.Post;
 import com.example.edelsteindo.androidproject.Model.User;
+import com.example.edelsteindo.androidproject.Model.model;
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -29,7 +32,8 @@ import java.util.List;
 public class PostsListFragment extends android.app.Fragment {
 
     private List<Post> data;
-
+    private ListView list;
+    private PostListAdapter adapter;
     public static PostsListFragment newInstance() {
         PostsListFragment fragment = new PostsListFragment();
         return fragment;
@@ -39,7 +43,13 @@ public class PostsListFragment extends android.app.Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            list = (ListView) getActivity().findViewById(R.id.post_list);
+            //getallposts isn't implemented yet
+            //data = model.instace.getAllPosts();
+            adapter = new PostListAdapter();
+            list.setAdapter(adapter);
         }
+
     }
 
     @Override
@@ -130,5 +140,48 @@ public class PostsListFragment extends android.app.Fragment {
         }
     }
 
+    class PostListAdapter extends BaseAdapter {
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        @Override
+        public int getCount() {
+            return data.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null){
+                convertView = inflater.inflate(R.layout.post_list_row,null);
+            }
+
+
+            ImageView postPic = (ImageView) convertView.findViewById(R.id.postPic);
+            TextView userName = (TextView) convertView.findViewById(R.id.userName);
+            TextView likesNum = (TextView) convertView.findViewById(R.id.likesNum);
+            TextView isActive = (TextView) convertView.findViewById(R.id.isActive);
+            TextView description = (TextView) convertView.findViewById(R.id.description);
+
+            Post p = data.get(position);
+            postPic.setImageURI(Uri.parse(p.getPostPic()));
+            userName.setText(p.getUser());
+            likesNum.setText(p.getNumOfLikes());
+            isActive.setText(Boolean.toString(p.isActive()));
+            description.setText(p.getDescription());
+            return convertView;
+
+        }
+    }
 
 }
+

@@ -7,21 +7,21 @@ import android.media.Image;
  */
 
 public class Post {
-    private  Image postPic;
+    private  String postPicURL;
     private int numOfLikes;
     private boolean active;
-    private String Description;
-    private User poster;
+    private String description;
+    private String userName;
 
-    public Post(User poster) {
-        this.poster = poster;
+    public Post( String userName) {
+        this.userName = userName;
     }
-    public Image getPostPic() {
-        return postPic;
+    public String getPostPic() {
+        return postPicURL;
     }
 
-    public void setPostPic(Image postPic) {
-        this.postPic = postPic;
+    public void setPostPic(String postPic) {
+        this.postPicURL = postPic;
     }
 
     public int getNumOfLikes() {
@@ -41,18 +41,18 @@ public class Post {
     }
 
     public String getDescription() {
-        return Description;
+        return description;
     }
 
     public void setDescription(String description) {
-        Description = description;
+        description = description;
     }
 
-    public User getPoster() {
-        return poster;
+    public String getUser() {
+        return userName;
     }
 
-    public void setPoster(User poster) {
-        this.poster = poster;
+    public void setPoster(String userName) {
+        this.userName = userName;
     }
 }
