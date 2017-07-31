@@ -1,7 +1,6 @@
 package com.example.edelsteindo.androidproject;
 
 import android.content.Context;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.edelsteindo.androidproject.Model.Post;
-import com.example.edelsteindo.androidproject.Model.User;
 
 import java.util.List;
 

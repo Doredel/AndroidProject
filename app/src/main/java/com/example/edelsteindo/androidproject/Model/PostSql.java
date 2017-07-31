@@ -46,7 +46,7 @@ public class PostSql {
                 pst.setActive((cursor.getInt(activeIndex) == 1));
                 pst.setDescription(cursor.getString(descriptionIndex));
                 pst.setNumOfLikes(cursor.getInt(likesIndex));
-                pst.setPostPic(cursor.getString(picUrlIndex));
+                pst.setPostPicUrl(cursor.getString(picUrlIndex));
 
                 list.add(pst);
 
@@ -64,7 +64,7 @@ public class PostSql {
         values.put(POST_ACTIVE, pst.isActive());
         values.put(POST_DESCRIPTION, pst.getDescription());
         values.put(POST_LIKES,pst.getNumOfLikes());
-        values.put(POST_PICURL,pst.getPostPic());
+        values.put(POST_PICURL,pst.getPostPicUrl());
 
         long res = db.insert(POST_TABLE, null, values);
 
@@ -98,7 +98,7 @@ public class PostSql {
             pst.setActive((cursor.getInt(activeIndex) == 1));
             pst.setDescription(cursor.getString(descriptionIndex));
             pst.setNumOfLikes(cursor.getInt(likesIndex));
-            pst.setPostPic(cursor.getString(picUrlIndex));
+            pst.setPostPicUrl(cursor.getString(picUrlIndex));
 
 
         }

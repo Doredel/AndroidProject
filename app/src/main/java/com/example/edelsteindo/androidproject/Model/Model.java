@@ -16,22 +16,22 @@ public class Model {
 
     public Model() {
         modelMem = new MemModel();
-        modelSql = new SqlModel(MyApplication.getMyContext());
+        //modelSql = new SqlModel(MyApplication.getMyContext());
     }
 
-    public List<User> getAllUsers() {
-        return null;
+    public List<Post> getAllPost() {
+        return this.modelMem.getAllPost();
     }
 
-    public boolean addUser(User user) {
-        return false;
+    public boolean addPost(Post post) {
+        return this.modelMem.addPost(post);
     }
 
-    public boolean removeUser(String userName) {
-        return false;
+    public boolean removePost(String id) {
+        return this.modelMem.removePost(id);
     }
 
-    public User getUser(String userName){
-        return null;
+    public Post getPost(String id){
+        return this.modelMem.getPost(id);
     }
 }

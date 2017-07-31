@@ -10,48 +10,35 @@ import java.util.List;
 public class MemModel {
     public final static MemModel instace = new MemModel();
 
+    private List<Post> data;
+
     public MemModel(){
-        this.data = new LinkedList<User>();
-        this.data.add(new User("Dor Edelstein","dor_edel","123"));
-        this.data.add(new User("Nevo Saporta","nevoSap","123"));
-        this.data.add(new User("Bla Bla","blab","bla"));
+        this.data = new LinkedList<Post>();
     }
 
-    private List<User> data;
-
-    public List<User> getAllUsers(){
-        return data;
+    public List<Post> getAllPost() {
+        return this.data;
     }
 
-    public boolean addUser(User user){
-        if(getUser(user.getUserName()) == null ) {
-            data.add(user);
-            return true;
+    public boolean addPost(Post post) {
+        if(this.getPost(post.getId()) != null) {
+            return false;
+        }
+        return this.data.add(post);
+    }
+
+    public boolean removePost(String id) {
+        Post post = this.getPost(id);
+        if(post != null) {
+            return this.data.remove(post);
         }
         return false;
     }
 
-    public boolean removeUser(String userName){
-        return data.remove(getUser(userName));
-    }
-
-    public boolean editUser(String userName, User u){
-        int index = data.indexOf(getUser(userName));
-
-        if(index != -1){
-            this.data.get(index).setFullName(u.getFullName());
-            this.data.get(index).setPassword(u.getPassword());
-            this.data.get(index).setUserName(u.getUserName());
-            this.data.get(index).setProfilePic(u.getProfilePic());
-        }
-
-        return (index != -1);
-    }
-
-    public User getUser(String userName) {
-        for (User u : data){
-            if (u.getUserName().equals(userName)){
-                return u;
+    public Post getPost(String id){
+        for (Post p:this.data) {
+            if(p.getId().equals(id)){
+                return p;
             }
         }
         return null;
