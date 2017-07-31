@@ -62,5 +62,5 @@ public class SignUpFregment extends Fragment {
      * Created by saportane on 31/07/2017.
      */
 
-   
+
 }
