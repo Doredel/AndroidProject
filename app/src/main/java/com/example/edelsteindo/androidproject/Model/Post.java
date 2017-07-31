@@ -1,27 +1,56 @@
 package com.example.edelsteindo.androidproject.Model;
 
-import android.media.Image;
+import java.util.Random;
 
 /**
  * Created by saportane on 27/06/2017.
  */
 
 public class Post {
-    private  String postPicURL;
+    private String id;
+    private String postPicUrl;
     private int numOfLikes;
     private boolean active;
     private String description;
-    private String userName;
+    private String user;
 
-    public Post( String userName) {
-        this.userName = userName;
-    }
-    public String getPostPic() {
-        return postPicURL;
+    public Post() {
+        genRandomId();
     }
 
-    public void setPostPic(String postPic) {
-        this.postPicURL = postPic;
+    public Post(Post post) {
+        this.setId(post.getId());
+        this.setUser(post.getUser());
+        this.setPostPicUrl(post.getPostPicUrl());
+        this.setNumOfLikes(post.getNumOfLikes());
+        this.setDescription(post.getDescription());
+        this.setActive(post.isActive());
+    }
+
+
+    public Post(String user, String description, String postPicUrl, int numOfLikes, boolean active) {
+        genRandomId();
+        this.postPicUrl = postPicUrl;
+        this.numOfLikes = numOfLikes;
+        this.active = active;
+        this.description = description;
+        this.user = user;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getPostPicUrl() {
+        return postPicUrl;
+    }
+
+    public void setPostPicUrl(String postPicUrl) {
+        this.postPicUrl = postPicUrl;
     }
 
     public int getNumOfLikes() {
@@ -45,14 +74,19 @@ public class Post {
     }
 
     public void setDescription(String description) {
-        description = description;
+        this.description = description;
     }
 
     public String getUser() {
-        return userName;
+        return user;
     }
 
-    public void setPoster(String userName) {
-        this.userName = userName;
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    private void genRandomId(){
+        Random rand = new Random();
+        this.setId((new Integer(rand.nextInt())).toString());
     }
 }

@@ -1,7 +1,6 @@
 package com.example.edelsteindo.androidproject;
 
 import android.content.Context;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
