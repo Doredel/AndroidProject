@@ -14,6 +14,12 @@ public class MemModel {
 
     public MemModel(){
         this.data = new LinkedList<Post>();
+        this.addPost(new Post("Nevo@gmail.com","Free food at... ","",69,true));
+        this.addPost(new Post("Doredel98@gmail.com","Free food !!! yiay!!!!!!","",1,true));
+        this.addPost(new Post("User1@gmail.com","1111111111111111111111111","",10,true));
+        this.addPost(new Post("User2@gmail.com","2222222222222222222222222","",20,true));
+        this.addPost(new Post("User3@gmail.com","3333333333333333333333333","",37,true));
+        this.addPost(new Post("User4@gmail.com","4444444444444444444444444","",109,true));
     }
 
     public List<Post> getAllPost() {
