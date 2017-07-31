@@ -4,7 +4,7 @@ import android.content.Context;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,14 +26,12 @@ import java.util.List;
  * Use the {@link PostsListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PostsListFragment extends Fragment {
+public class PostsListFragment extends android.app.Fragment {
 
     private List<Post> data;
 
-    public static PostsListFragment newInstance(String param1, String param2) {
+    public static PostsListFragment newInstance() {
         PostsListFragment fragment = new PostsListFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
         return fragment;
     }
 

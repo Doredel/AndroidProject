@@ -1,6 +1,9 @@
 package com.example.edelsteindo.androidproject;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -8,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 
 /**
@@ -20,7 +24,7 @@ import android.view.ViewGroup;
 public class SignInFregment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-
+    private Fragment fragment;
     public SignInFregment() {
         // Required empty public constructor
     }
@@ -48,9 +52,35 @@ public class SignInFregment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View contentView = inflater.inflate(R.layout.fragment_sign_in_fregment, container, false);
-
+        
+        //setting the buttons events
+        Button sign_in_btn = (Button)contentView.findViewById(R.id.signInBtn);
+        sign_in_btn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                //// TODO: 27/06/2017  check if password is correct 
+                Intent intent = new Intent(getActivity(),MainActivity.class);
+                startActivity(intent);
+            }
+        });
+        
+        Button sign_up_btn = (Button)contentView.findViewById(R.id.signUpBtn);
+        sign_up_btn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                //// TODO: 27/06/2017  saving data and stuff
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragment = SignUpFregment.newInstance();
+                fragmentTransaction.replace(R.id.login_fragment_container,fragment);
+                fragmentTransaction.commit();
+            }
+        });
         Log.d("SignIn", "onCreateView");
-
         return contentView;
     }
 
