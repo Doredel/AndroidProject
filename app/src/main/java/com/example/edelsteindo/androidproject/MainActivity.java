@@ -40,6 +40,7 @@ public class MainActivity extends Activity {
         switch (item.getItemId())
         {
             case R.id.addPost:
+                item.setEnabled(false);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragment = AddPostFragment.newInstance();

@@ -1,12 +1,21 @@
 package com.example.edelsteindo.androidproject;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.edelsteindo.androidproject.Model.Model;
+import com.example.edelsteindo.androidproject.Model.Post;
 
 
 /**
@@ -18,7 +27,8 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class AddPostFragment extends Fragment {
-
+    private boolean picChosen =false;
+    Fragment fragment;
     public AddPostFragment() {
         // Required empty public constructor
     }
@@ -48,23 +58,47 @@ public class AddPostFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        final View contentView = inflater.inflate(R.layout.fragment_add_post, container, false);
+        Button upload_btn = (Button) contentView.findViewById(R.id.uploadBtn);
+        Button upload_pic = (Button) contentView.findViewById(R.id.choosePicBtn);
+        upload_pic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                picChosen=true;
+            }
+        });
+        upload_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //// TODO: 02/08/2017   user reconition & actual photo
+                if(picChosen)
+                {
+                    //saving the post
+                    TextView description = (TextView) contentView.findViewById(R.id.newPostDescription);
+                    Model.instace.addPost(new Post("bobo@gmail.com",description.getText().toString(),"",0,true));
+                    //returnig to the main fregmant
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragment = PostsListFragment.newInstance();
+                    fragmentTransaction.replace(R.id.main_fragment_container, fragment);
+                    fragmentTransaction.commit();
+                }
+                else
+                {
+                    Toast toast = Toast.makeText(MyApplication.getMyContext(), "Please choose your picture first", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+        });
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_post, container, false);
+        return contentView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
+
 
     @Override
     public void onDetach() {
