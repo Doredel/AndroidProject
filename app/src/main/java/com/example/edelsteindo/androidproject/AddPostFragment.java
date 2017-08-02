@@ -77,6 +77,7 @@ public class AddPostFragment extends Fragment {
                     TextView description = (TextView) contentView.findViewById(R.id.newPostDescription);
                     Model.instace.addPost(new Post("bobo@gmail.com",description.getText().toString(),"",0,true));
                     //returnig to the main fregmant
+                    //.....
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragment = PostsListFragment.newInstance();
