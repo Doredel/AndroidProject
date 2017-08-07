@@ -38,17 +38,20 @@ public class Model {
     }
 
     public void addPost(Post post) {
-
         this.modelFirebase.addPost(post);
-        PostSql.addPost(modelSql.getWritableDatabase(),post);
+        //PostSql.addPost(modelSql.getWritableDatabase(),post);
         //this.modelMem.addPost(post);
     }
 
     public void removePost(String id) {
-        PostSql.removePost(modelSql.getWritableDatabase(),id);
+        this.modelFirebase.removePost(id);
+        //PostSql.removePost(modelSql.getWritableDatabase(),id);
         //this.modelMem.removePost(id);
     }
 
+    public void updatePost(Post post) {
+        this.updatePost(post);
+    }
 
     public interface GetPostCallback{
         void onComplete(Post post);

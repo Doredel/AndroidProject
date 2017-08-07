@@ -3,6 +3,7 @@ package com.example.edelsteindo.androidproject.Model;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -10,14 +11,17 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by edelsteindo on 07/08/2017.
@@ -25,16 +29,36 @@ import java.util.List;
 
 public class FirebaseModel {
 
+    private Map<String, Object> createValues(Post post){
+        Map<String, Object> value = new HashMap<>();
+        value.put("id", post.getId());
+        value.put("postPicUrl", post.getPostPicUrl());
+        value.put("numOfLikes", post.getNumOfLikes());
+        value.put("active", post.isActive());
+        value.put("description", post.getDescription());
+        value.put("user", post.getUser());
+        value.put("lastUpdateDate", ServerValue.TIMESTAMP);
+
+        return value;
+    }
+
     public void addPost(Post post){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("posts");
-        myRef.child(post.getId()).setValue(post);
+        myRef.child(post.getId()).setValue(createValues(post));
+
     }
 
     public void removePost(String id){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("posts");
         myRef.child(id).removeValue();
+    }
+
+    public void updatePost(Post post){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("posts");
+        myRef.child(post.getId()).setValue(createValues(post));
     }
 
     interface GetPostCallback {
@@ -67,7 +91,7 @@ public class FirebaseModel {
     public void getAllPostsAndObserve(final GetAllPostsAndObserveCallback callback) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("posts");
-        ValueEventListener listener = myRef.addValueEventListener(new ValueEventListener() {
+        myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Post> list = new LinkedList<Post>();
@@ -88,23 +112,27 @@ public class FirebaseModel {
     //-------------------------------------------------------------------------------------
 
     public void saveImage(Bitmap imageBmp, String name, final Model.SaveImageListener listener){
+        Log.d("TAG","data1");
         FirebaseStorage storage = FirebaseStorage.getInstance();
-
+        Log.d("TAG","data2");
         StorageReference imagesRef = storage.getReference().child("images").child(name);
-
+        Log.d("TAG","data3");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageBmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
+        Log.d("TAG","data4");
 
         UploadTask uploadTask = imagesRef.putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(Exception exception) {
+                Log.d("TAG","data5");
                 listener.fail();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.d("TAG","data6");
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 listener.complete(downloadUrl.toString());
             }
