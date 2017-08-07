@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.edelsteindo.androidproject.Model.Model;
 import com.example.edelsteindo.androidproject.Model.Post;
@@ -36,6 +37,7 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class PostsListFragment extends android.app.Fragment {
+
 
     private List<Post> data = new LinkedList<Post>();
     private ListView list;
@@ -63,7 +65,7 @@ public class PostsListFragment extends android.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View contextView =inflater.inflate(R.layout.fragment_posts_list, container, false);
+        final View contextView =inflater.inflate(R.layout.fragment_posts_list, container, false);
 
         seacrh_text = (EditText)contextView.findViewById(R.id.search_text);
         seacrh_text.setVisibility(View.GONE);
@@ -105,11 +107,20 @@ public class PostsListFragment extends android.app.Fragment {
         data.clear();
         data.addAll(Model.instace.getAllPost());
 
+        Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
+            @Override
+            public void onComplete(List<Post> list) {
+                data = list;
+                adapter.notifyDataSetChanged();
+            }
 
+            @Override
+            public void onCancel() {
+            }
+        });
 
         adapter = new PostListAdapter();
         list.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
 
 
         return contextView;
