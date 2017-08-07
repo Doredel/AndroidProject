@@ -90,7 +90,7 @@ public class PostsListFragment extends android.app.Fragment {
                 data.clear();
                 data.addAll(temp);
                 adapter.notifyDataSetChanged();
-                
+
             }
 
             @Override
