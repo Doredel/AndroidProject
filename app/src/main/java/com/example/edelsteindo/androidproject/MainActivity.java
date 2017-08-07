@@ -27,28 +27,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater= getMenuInflater();
-        inflater.inflate(R.menu.main_menu,menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId())
-        {
-            case R.id.addPost:
-                item.setEnabled(false);
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragment = AddPostFragment.newInstance();
-                fragmentTransaction.replace(R.id.main_fragment_container, fragment);
-                fragmentTransaction.commit();
-
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
 }
 
