@@ -26,22 +26,22 @@ public class Model {
     }
 
     public List<Post> getAllPost() {
-        return PostSql.getAllPosts(modelSql.getReadableDatabase());
-        //return this.modelMem.getAllPost();
+        //return PostSql.getAllPosts(modelSql.getReadableDatabase());
+        return this.modelMem.getAllPost();
     }
 
     public boolean addPost(Post post) {
-        return PostSql.addPost(modelSql.getWritableDatabase(),post);
-        //return this.modelMem.addPost(post);
+        //return PostSql.addPost(modelSql.getWritableDatabase(),post);
+        return this.modelMem.addPost(post);
     }
 
     public void removePost(String id) {
-        PostSql.removePost(modelSql.getWritableDatabase(),id);
-        //return this.modelMem.removePost(id);
+        //PostSql.removePost(modelSql.getWritableDatabase(),id);
+        this.modelMem.removePost(id);
     }
 
     public Post getPost(String id){
-        return PostSql.getPost(modelSql.getReadableDatabase(),id);
-        //return this.modelMem.getPost(id);
+        //return PostSql.getPost(modelSql.getReadableDatabase(),id);
+        return this.modelMem.getPost(id);
     }
 }
