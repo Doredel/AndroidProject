@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -83,7 +84,13 @@ public class PostsListFragment extends android.app.Fragment {
         super.onDetach();
     }
 
-//    /**
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        Log.d("f", "onPrepareOptionsMenu: ");
+        menu.findItem(R.id.addPost).setEnabled(true);
+        super.onPrepareOptionsMenu(menu);
+    }
+    //    /**
 //     * This interface must be implemented by activities that contain this
 //     * fragment to allow an interaction in this fragment to be communicated
 //     * to the activity and potentially other fragments contained in that
