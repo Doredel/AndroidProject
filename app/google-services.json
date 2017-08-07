@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "999838375808",
+    "firebase_url": "https://finalproject-ddacf.firebaseio.com",
+    "project_id": "finalproject-ddacf",
+    "storage_bucket": "finalproject-ddacf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:999838375808:android:b9e724c4e8b7fcf6",
+        "android_client_info": {
+          "package_name": "com.example.edelsteindo.androidproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "999838375808-on00kbd1i3ugnee9ni21gnpgdoj94knl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIv9JJA2Hr1H3T8UGENH9PRm1nEkvAHMc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

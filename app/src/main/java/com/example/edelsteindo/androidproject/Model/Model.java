@@ -1,6 +1,8 @@
 package com.example.edelsteindo.androidproject.Model;
 
 import com.example.edelsteindo.androidproject.MyApplication;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -17,6 +19,10 @@ public class Model {
     public Model() {
         modelMem = new MemModel();
         modelSql = new SqlModel(MyApplication.getMyContext());
+
+        /*FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("message");
+        myRef.setValue("Hello World!!!");*/
     }
 
     public List<Post> getAllPost() {
