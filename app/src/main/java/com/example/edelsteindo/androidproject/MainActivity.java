@@ -12,7 +12,6 @@ import android.view.MenuItem;
 public class MainActivity extends Activity {
   
     private Fragment fragment;
-  
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +39,7 @@ public class MainActivity extends Activity {
         switch (item.getItemId())
         {
             case R.id.addPost:
+                item.setEnabled(false);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragment = AddPostFragment.newInstance();
@@ -49,5 +49,6 @@ public class MainActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }
 

@@ -1,12 +1,28 @@
 package com.example.edelsteindo.androidproject;
 
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+import static android.app.Activity.RESULT_OK;
+import com.example.edelsteindo.androidproject.Model.Model;
+import com.example.edelsteindo.androidproject.Model.Post;
 
 
 /**
@@ -18,8 +34,14 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class AddPostFragment extends Fragment {
-
-    public AddPostFragment() {
+    private boolean picChosen =false;
+    private Fragment fragment;
+    private ImageView imageView;
+    private Bitmap imageBitmap;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private Button upload_btn ;
+    private Button upload_pic;
+     public AddPostFragment() {
         // Required empty public constructor
     }
 
@@ -42,29 +64,83 @@ public class AddPostFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            setHasOptionsMenu(true);
+
         }
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        final View contentView = inflater.inflate(R.layout.fragment_add_post, container, false);
+        upload_btn = (Button) contentView.findViewById(R.id.uploadBtn);
+        upload_pic = (Button) contentView.findViewById(R.id.choosePicBtn);
+        imageView = (ImageView) contentView.findViewById(R.id.chosenPic);
+        upload_pic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("tag","upload_pic OnClickListener");
+                dispatchTakePictureIntent();
+                picChosen=true;
+            }
+        });
+        upload_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //// TODO: 02/08/2017   user reconition & actual photo
+                if(picChosen)
+                {
+                    //saving the post
+                    TextView description = (TextView) contentView.findViewById(R.id.newPostDescription);
+                    Model.instace.addPost(new Post("bobo@gmail.com",description.getText().toString(),"",0,true));
+                    //returnig to the main fregmant
+                    //.....
+
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragment = PostsListFragment.newInstance();
+                    fragmentTransaction.replace(R.id.main_fragment_container, fragment);
+                    fragmentTransaction.commit();
+                }
+                else
+                {
+                    Toast toast = Toast.makeText(MyApplication.getMyContext(), "Please choose your picture first", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+        });
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_post, container, false);
+        return contentView;
+    }
+
+
+    private void dispatchTakePictureIntent() {
+        Log.d("tag","dispatchTakePictureIntent");
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("tag","onActivityResult");
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK ) {
+            Bundle extras = data.getExtras();
+            imageBitmap = (Bitmap) extras.get("data");
+            imageView.setImageBitmap(imageBitmap);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("tag","onActivityResult2");
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
+
 
     @Override
     public void onDetach() {
