@@ -86,60 +86,47 @@ public class AddPostFragment extends Fragment {
                 picChosen=true;
             }
         });
+        //saving the post
         upload_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //// TODO: 02/08/2017   user reconition & actual photo
-                if(picChosen)
-                {
-                    //saving the post
+                if(picChosen) {
                     TextView description = (TextView) contentView.findViewById(R.id.newPostDescription);
-                    Model.instace.addPost(new Post("bobo@gmail.com",description.getText().toString(),"",0,true));
-                    //returnig to the main fregmant
-                    //.....
+                    if (imageBitmap != null) {
+                        final Post post = new Post("bobo@gmail.com", description.getText().toString(), "", 0, true);
+                        //Model.instace.addPost(post);
+                        Model.instace.saveImage(imageBitmap, post.getId() + ".jpg", new Model.SaveImageListener() {
+                            @Override
+                            public void complete(String url) {
+                                post.setPostPicUrl(url);
+                                Model.instace.addPost(post);
+                            }
 
-                    FragmentManager fragmentManager = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragment = PostsListFragment.newInstance();
-                    fragmentTransaction.replace(R.id.main_fragment_container, fragment);
-                    fragmentTransaction.commit();
-                }
-                else
-                {
-                    Toast toast = Toast.makeText(MyApplication.getMyContext(), "Please choose your picture first", Toast.LENGTH_SHORT);
-                    toast.show();
+                            @Override
+                            public void fail() {
+                                Log.d("Fail","image error");
+                            }
+                        });
+
+                        //returnig to the main fregmant
+                        //.....
+
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragment = PostsListFragment.newInstance();
+                        fragmentTransaction.replace(R.id.main_fragment_container, fragment);
+                        fragmentTransaction.commit();
+                    } else {
+                        Toast toast = Toast.makeText(MyApplication.getMyContext(), "Please choose your picture first", Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
                 }
             }
         });
         // Inflate the layout for this fragment
         return contentView;
     }
-
-
-    private void dispatchTakePictureIntent() {
-        Log.d("tag","dispatchTakePictureIntent");
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("tag","onActivityResult");
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK ) {
-            Bundle extras = data.getExtras();
-            imageBitmap = (Bitmap) extras.get("data");
-            imageView.setImageBitmap(imageBitmap);
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d("tag","onActivityResult2");
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-    }
-
 
 
     @Override
@@ -161,4 +148,30 @@ public class AddPostFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+    }
+
+    private void dispatchTakePictureIntent() {
+        Log.d("tag","dispatchTakePictureIntent");
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("tag","onActivityResult");
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK ) {
+            Bundle extras = data.getExtras();
+            imageBitmap = (Bitmap) extras.get("data");
+            imageView.setImageBitmap(imageBitmap);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("tag","onActivityResult2");
+    }
+
 }

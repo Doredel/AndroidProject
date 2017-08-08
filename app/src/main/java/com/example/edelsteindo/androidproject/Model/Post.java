@@ -13,6 +13,7 @@ public class Post {
     private boolean active;
     private String description;
     private String user;
+    public double lastUpdateDate;
 
     public Post() {
         genRandomId();
@@ -25,6 +26,7 @@ public class Post {
         this.setNumOfLikes(post.getNumOfLikes());
         this.setDescription(post.getDescription());
         this.setActive(post.isActive());
+        this.setLastUpdateDate(post.getLastUpdateDate());
     }
 
 
@@ -35,6 +37,7 @@ public class Post {
         this.active = active;
         this.description = description;
         this.user = user;
+        this.setLastUpdateDate(0);
     }
 
     public String getId() {
@@ -85,8 +88,16 @@ public class Post {
         this.user = user;
     }
 
+    public double getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(double lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
+    }
+
     private void genRandomId(){
         Random rand = new Random();
-        this.setId((new Integer(rand.nextInt())).toString());
+        this.setId((new Integer(rand.nextInt(Integer.MAX_VALUE))).toString());
     }
 }
