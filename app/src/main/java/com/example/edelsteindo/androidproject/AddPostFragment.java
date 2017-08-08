@@ -83,7 +83,7 @@ public class AddPostFragment extends Fragment {
             public void onClick(View view) {
                 Log.d("tag","upload_pic OnClickListener");
                 dispatchTakePictureIntent();
-                picChosen=true;
+                picChosen=false;
             }
         });
         //saving the post
@@ -91,38 +91,37 @@ public class AddPostFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //// TODO: 02/08/2017   user reconition & actual photo
-                if(picChosen) {
-                    TextView description = (TextView) contentView.findViewById(R.id.newPostDescription);
-                    if (imageBitmap != null) {
-                        final Post post = new Post("bobo@gmail.com", description.getText().toString(), "", 0, true);
-                        //Model.instace.addPost(post);
-                        Model.instace.saveImage(imageBitmap, post.getId() + ".jpg", new Model.SaveImageListener() {
-                            @Override
-                            public void complete(String url) {
-                                post.setPostPicUrl(url);
-                                Model.instace.addPost(post);
-                            }
+                TextView description = (TextView) contentView.findViewById(R.id.newPostDescription);
+                if (imageBitmap != null) {
+                    final Post post = new Post("bobo@gmail.com", description.getText().toString(), "", 0, true);
+                    //Model.instace.addPost(post);
+                    Model.instace.saveImage(imageBitmap, post.getId() + ".jpg", new Model.SaveImageListener() {
+                        @Override
+                        public void complete(String url) {
+                            post.setPostPicUrl(url);
+                            Model.instace.addPost(post);
+                        }
 
-                            @Override
-                            public void fail() {
-                                Log.d("Fail","image error");
-                            }
-                        });
+                        @Override
+                        public void fail() {
+                            Log.d("Fail","image error");
+                        }
+                    });
 
-                        //returnig to the main fregmant
-                        //.....
+                    //returnig to the main fregmant
+                    //.....
 
-                        FragmentManager fragmentManager = getFragmentManager();
-                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragment = PostsListFragment.newInstance();
-                        fragmentTransaction.replace(R.id.main_fragment_container, fragment);
-                        fragmentTransaction.commit();
-                    } else {
-                        Toast toast = Toast.makeText(MyApplication.getMyContext(), "Please choose your picture first", Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
+                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragment = PostsListFragment.newInstance();
+                    fragmentTransaction.replace(R.id.main_fragment_container, fragment);
+                    fragmentTransaction.commit();
+                } else {
+                    Toast toast = Toast.makeText(MyApplication.getMyContext(), "Please choose your picture first", Toast.LENGTH_SHORT);
+                    toast.show();
                 }
-            }
+
+                }
         });
         // Inflate the layout for this fragment
         return contentView;
