@@ -1,18 +1,25 @@
 package com.example.edelsteindo.androidproject;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.app.Fragment;
+
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,13 +42,18 @@ import java.util.List;
  */
 public class PostsListFragment extends android.app.Fragment {
 
-    private List<Post> data =  new LinkedList<Post>();
+
+    private List<Post> data = new LinkedList<Post>();
     private ListView list;
+    private EditText seacrh_text;
     private PostListAdapter adapter;
 
     private ImageView postPic;
 
     static final int REQUEST_WRITE_STORAGE = 11;
+
+
+    private Fragment fragment;
 
     public static PostsListFragment newInstance() {
         PostsListFragment fragment = new PostsListFragment();
@@ -51,6 +63,8 @@ public class PostsListFragment extends android.app.Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
         if (getArguments() != null) {
 
         }
@@ -64,9 +78,45 @@ public class PostsListFragment extends android.app.Fragment {
         // Inflate the layout for this fragment
         final View contextView =inflater.inflate(R.layout.fragment_posts_list, container, false);
 
+        seacrh_text = (EditText)contextView.findViewById(R.id.search_text);
+        seacrh_text.setVisibility(View.GONE);
+        seacrh_text.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+                data.clear();
+                data.addAll(Model.instace.getAllPost());
+                adapter.notifyDataSetChanged();
+                List<Post> temp = new LinkedList<Post>();
+
+                for(int i =0; i<data.size();i++)
+                {
+                    if(data.get(i).getUser().contains(s))
+                        temp.add(data.get(i));
+
+                }
+                data.clear();
+                data.addAll(temp);
+                adapter.notifyDataSetChanged();
+                
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         Log.d("f", "onCreateView: ");
         list = (ListView)contextView.findViewById(R.id.post_list);
         //getallposts isn't implemented yet
+        data.clear();
+        data.addAll(Model.instace.getAllPost());
 
         Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
             @Override
@@ -92,6 +142,7 @@ public class PostsListFragment extends android.app.Fragment {
         }
 
 
+
         return contextView;
     }
 
@@ -100,6 +151,38 @@ public class PostsListFragment extends android.app.Fragment {
         menu.findItem(R.id.addPost).setEnabled(true);
         super.onPrepareOptionsMenu(menu);
     }
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main_menu,menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId())
+        {
+            case R.id.addPost:
+                item.setEnabled(false);
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragment = AddPostFragment.newInstance();
+                fragmentTransaction.replace(R.id.main_fragment_container, fragment);
+                fragmentTransaction.commit();
+            case R.id.search:
+                if (seacrh_text.getVisibility() == View.VISIBLE)
+                {
+                    seacrh_text.setVisibility(View.GONE);
+                } else
+                {
+                    seacrh_text.setVisibility(View.VISIBLE);
+                    data.addAll(Model.instace.getAllPost());
+                    adapter.notifyDataSetChanged();
+                }
+
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     class PostListAdapter extends BaseAdapter {
 
