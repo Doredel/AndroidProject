@@ -23,6 +23,8 @@ import android.widget.Toast;
 import static android.app.Activity.RESULT_OK;
 import com.example.edelsteindo.androidproject.Model.Model;
 import com.example.edelsteindo.androidproject.Model.Post;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 /**
@@ -41,6 +43,8 @@ public class AddPostFragment extends Fragment {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private Button upload_btn ;
     private Button upload_pic;
+    FirebaseUser currentUser ;
+    private FirebaseAuth mAuth;
      public AddPostFragment() {
         // Required empty public constructor
     }
@@ -62,6 +66,8 @@ public class AddPostFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        mAuth=FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             setHasOptionsMenu(true);
@@ -93,7 +99,7 @@ public class AddPostFragment extends Fragment {
                 //// TODO: 02/08/2017   user reconition & actual photo
                 TextView description = (TextView) contentView.findViewById(R.id.newPostDescription);
                 if (imageBitmap != null) {
-                    final Post post = new Post("bobo@gmail.com", description.getText().toString(), "", 0, true);
+                    final Post post = new Post(currentUser.getEmail(), description.getText().toString(), "", 0, true);
                     //Model.instace.addPost(post);
                     Model.instace.saveImage(imageBitmap, post.getId() + ".jpg", new Model.SaveImageListener() {
                         @Override

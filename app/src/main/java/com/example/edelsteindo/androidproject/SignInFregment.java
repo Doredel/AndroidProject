@@ -12,6 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 /**
@@ -25,6 +32,9 @@ public class SignInFregment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private Fragment fragment;
+    private EditText password;
+    private EditText userName;
+    private FirebaseAuth mAuth;
     public SignInFregment() {
         // Required empty public constructor
     }
@@ -43,6 +53,7 @@ public class SignInFregment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        mAuth =FirebaseAuth.getInstance();
         super.onCreate(savedInstanceState);
         Log.d("SignIn", "onCreate");
     }
@@ -52,7 +63,8 @@ public class SignInFregment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View contentView = inflater.inflate(R.layout.fragment_sign_in_fregment, container, false);
-        
+        password = (EditText) contentView.findViewById(R.id.signInPass);
+        userName = (EditText) contentView.findViewById(R.id.signInUserName);
         //setting the buttons events
         Button sign_in_btn = (Button)contentView.findViewById(R.id.signInBtn);
         sign_in_btn.setOnClickListener(new View.OnClickListener()
@@ -60,9 +72,33 @@ public class SignInFregment extends Fragment {
             @Override
             public void onClick(View v)
             {
-                //// TODO: 27/06/2017  check if password is correct 
-                Intent intent = new Intent(getActivity(),MainActivity.class);
-                startActivity(intent);
+                if(!(password.getText().toString().matches("")||userName.getText().toString().matches("")))
+                {
+                    mAuth.signInWithEmailAndPassword(userName.getText().toString(), password.getText().toString())
+                            .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        // Sign in success, update UI with the signed-in user's information
+                                        Log.d("TAG", "signInWithEmail:success");
+                                        Intent intent = new Intent(getActivity(),MainActivity.class);
+                                        startActivity(intent);
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        Log.w("TAG","signInWithEmail:failure", task.getException());
+                                        Toast.makeText(getActivity(), task.getException().getMessage(),
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    // ...
+                                }
+                            });
+                }
+                else
+                {
+                    Toast.makeText(getActivity(), "Please fill all of the fields",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
         
@@ -72,7 +108,7 @@ public class SignInFregment extends Fragment {
             @Override
             public void onClick(View v)
             {
-                //// TODO: 27/06/2017  saving data and stuff
+
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragment = SignUpFregment.newInstance();

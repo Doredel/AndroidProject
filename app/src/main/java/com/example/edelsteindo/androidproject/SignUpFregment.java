@@ -1,6 +1,7 @@
 package com.example.edelsteindo.androidproject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.NonNull;
@@ -30,7 +31,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class SignUpFregment extends Fragment {
 
     private FirebaseAuth mAuth;
-    private EditText email;
+    private  EditText email;
     private  EditText password;
     private  EditText confrimPassword;
     private  Button sign_up_btn;
@@ -85,8 +86,10 @@ public class SignUpFregment extends Fragment {
                                             if (task.isSuccessful()) {
                                                 // Sign in success, update UI with the signed-in user's information
                                                 Log.d("tag", "createUserWithEmail:success");
-                                                FirebaseUser user = mAuth.getCurrentUser();
-                                                //updateUI(user);
+
+                                                //open the post list activity
+                                                Intent intent = new Intent(getActivity(),MainActivity.class);
+                                                startActivity(intent);
                                             } else {
                                                 // If sign in fails, display a message to the user.
                                                 Toast.makeText(getActivity(), "Authentication failed." + task.getException().getMessage(),
