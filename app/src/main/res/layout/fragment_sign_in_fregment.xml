@@ -27,7 +27,8 @@
         <EditText
             android:id="@+id/signInUserName"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"/>
     </LinearLayout>
 
     <LinearLayout
@@ -43,8 +44,10 @@
             android:textSize="20dp"/>
 
         <EditText
+            android:id="@+id/signInPass"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"/>
     </LinearLayout>
 
     <LinearLayout
