@@ -32,6 +32,7 @@
 
         <EditText
             android:id="@+id/newUserName"
+            android:inputType="textEmailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -49,6 +50,7 @@
 
         <EditText
             android:id="@+id/newPassword"
+            android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -66,6 +68,7 @@
 
         <EditText
             android:id="@+id/newConfrimPassword"
+            android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -77,6 +80,7 @@
         android:gravity="center">
 
         <Button
+            android:id="@+id/new_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
