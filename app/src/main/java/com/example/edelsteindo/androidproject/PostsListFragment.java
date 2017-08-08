@@ -11,6 +11,8 @@ import android.app.Fragment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -87,22 +89,37 @@ public class PostsListFragment extends android.app.Fragment {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count)
+            public void onTextChanged(final CharSequence s, int start, int before, int count)
             {
-                data.clear();
-                data.addAll(Model.instace.getAllPost());
-                adapter.notifyDataSetChanged();
-                List<Post> temp = new LinkedList<Post>();
 
-                for(int i =0; i<data.size();i++)
-                {
-                    if(data.get(i).getUser().contains(s))
-                        temp.add(data.get(i));
+                Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
+                    @Override
+                    public void onComplete(List<Post> list) {
+                        data.clear();
+                        data.addAll(list);
+                        adapter.notifyDataSetChanged();
 
-                }
-                data.clear();
-                data.addAll(temp);
-                adapter.notifyDataSetChanged();
+                        List<Post> temp = new LinkedList<Post>();
+
+                        for(int i =0; i<data.size();i++)
+                        {
+                            if(data.get(i).getUser().contains(s))
+                                temp.add(data.get(i));
+
+                        }
+                        data.clear();
+                        data.addAll(temp);
+                        String st =data.size()+"";
+                        Log.d("total posts",st);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Log.d("error","blblblblblbl");
+                    }
+                });
+
 
             }
 
@@ -115,13 +132,12 @@ public class PostsListFragment extends android.app.Fragment {
         Log.d("f", "onCreateView: ");
         list = (ListView)contextView.findViewById(R.id.post_list);
         //getallposts isn't implemented yet
-        data.clear();
-        data.addAll(Model.instace.getAllPost());
 
         Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
             @Override
             public void onComplete(List<Post> list) {
-                data = list;
+                data.clear();
+                data.addAll(list);
                 adapter.notifyDataSetChanged();
             }
 
@@ -174,7 +190,17 @@ public class PostsListFragment extends android.app.Fragment {
                 } else
                 {
                     seacrh_text.setVisibility(View.VISIBLE);
-                    data.addAll(Model.instace.getAllPost());
+                    Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
+                        @Override
+                        public void onComplete(List<Post> list) {
+                            data.addAll(list);
+                        }
+
+                        @Override
+                        public void onCancel() {
+
+                        }
+                    });
                     adapter.notifyDataSetChanged();
                 }
 
