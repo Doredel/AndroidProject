@@ -112,27 +112,21 @@ public class FirebaseModel {
     //-------------------------------------------------------------------------------------
 
     public void saveImage(Bitmap imageBmp, String name, final Model.SaveImageListener listener){
-        Log.d("TAG","data1");
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        Log.d("TAG","data2");
         StorageReference imagesRef = storage.getReference().child("images").child(name);
-        Log.d("TAG","data3");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         imageBmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
-        Log.d("TAG","data4");
 
         UploadTask uploadTask = imagesRef.putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(Exception exception) {
-                Log.d("TAG","data5");
                 listener.fail();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Log.d("TAG","data6");
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 listener.complete(downloadUrl.toString());
             }

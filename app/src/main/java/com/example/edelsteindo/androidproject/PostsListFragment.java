@@ -1,8 +1,12 @@
 package com.example.edelsteindo.androidproject;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,6 +38,10 @@ public class PostsListFragment extends android.app.Fragment {
     private List<Post> data =  new LinkedList<Post>();
     private ListView list;
     private PostListAdapter adapter;
+
+    private ImageView postPic;
+
+    static final int REQUEST_WRITE_STORAGE = 11;
 
     public static PostsListFragment newInstance() {
         PostsListFragment fragment = new PostsListFragment();
@@ -75,28 +83,20 @@ public class PostsListFragment extends android.app.Fragment {
         adapter = new PostListAdapter();
         list.setAdapter(adapter);
 
+        boolean hasPermission = (ContextCompat.checkSelfPermission(getActivity(),
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_GRANTED);
+        if (!hasPermission) {
+            ActivityCompat.requestPermissions(getActivity(),new String[]{
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_STORAGE);
+        }
+
+
         return contextView;
-    }
-
-//    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//    }
-
-    @Override
-    public void onAttach(Context context) {
-        Log.d("f", "onAttach: ");
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDetach() {
-        Log.d("f", "onDetach: ");
-        super.onDetach();
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        Log.d("f", "onPrepareOptionsMenu: ");
         menu.findItem(R.id.addPost).setEnabled(true);
         super.onPrepareOptionsMenu(menu);
     }
@@ -127,18 +127,38 @@ public class PostsListFragment extends android.app.Fragment {
             }
 
 
-            ImageView postPic = (ImageView) convertView.findViewById(R.id.postPic);
+            postPic = (ImageView) convertView.findViewById(R.id.postPic);
             TextView userName = (TextView) convertView.findViewById(R.id.userName);
             TextView likesNum = (TextView) convertView.findViewById(R.id.likesNum);
             TextView isActive = (TextView) convertView.findViewById(R.id.isActive);
             TextView description = (TextView) convertView.findViewById(R.id.description);
 
-            Post p = data.get(position);
-            postPic.setImageResource(R.drawable.default_pic);//p.getPostPicUrl());
+            final Post p = data.get(position);
             userName.setText(p.getUser());
             likesNum.setText(p.getNumOfLikes()+"");
             isActive.setText(Boolean.toString(p.isActive()));
             description.setText(p.getDescription());
+
+            postPic.setTag(p.getPostPicUrl());
+            postPic.setImageResource(R.drawable.default_pic);
+
+            if (p.getPostPicUrl() != null && !p.getPostPicUrl().isEmpty() && !p.getPostPicUrl().equals("")){
+                Model.instace.getImage(p.getPostPicUrl(), new Model.GetImageListener() {
+                    @Override
+                    public void onSuccess(Bitmap image) {
+                        String tagUrl = postPic.getTag().toString();
+                        if (tagUrl.equals(p.getPostPicUrl())) {
+                            postPic.setImageBitmap(image);
+                        }
+                    }
+
+                    @Override
+                    public void onFail() {
+                    }
+                });
+            }
+
+
             return convertView;
 
         }
