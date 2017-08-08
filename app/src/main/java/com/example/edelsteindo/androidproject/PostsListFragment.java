@@ -116,6 +116,7 @@ public class PostsListFragment extends android.app.Fragment {
 
                     @Override
                     public void onCancel() {
+                        data.clear();
                         Log.d("error","blblblblblbl");
                     }
                 });
@@ -190,6 +191,7 @@ public class PostsListFragment extends android.app.Fragment {
                 } else
                 {
                     seacrh_text.setVisibility(View.VISIBLE);
+                    data.clear();
                     Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
                         @Override
                         public void onComplete(List<Post> list) {
