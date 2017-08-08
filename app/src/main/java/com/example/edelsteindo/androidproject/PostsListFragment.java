@@ -206,14 +206,12 @@ public class PostsListFragment extends android.app.Fragment {
                     });
                     adapter.notifyDataSetChanged();
                 }
-            case R.id.log_out:
-                Intent i = new Intent(getActivity(), LoginActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(i);
 
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 
 
     class PostListAdapter extends BaseAdapter {
