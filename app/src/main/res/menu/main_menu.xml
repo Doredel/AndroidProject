@@ -9,5 +9,10 @@
         android:showAsAction="always"
         android:title=""
         android:icon="@drawable/search_icon"/>
+    <group android:id="@+id/group">
+        <item android:id="@+id/log_out"
+         android:title="Log out" />
+    </group>
+
 
 </menu>
