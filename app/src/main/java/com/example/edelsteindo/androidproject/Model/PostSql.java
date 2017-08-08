@@ -23,6 +23,7 @@ public class PostSql {
     private static final String POST_LIKES = "likes";
     private static final String POST_USER = "user";
     private static final String POST_PICURL = "pic_url";
+    private static final String POST_LAST_UPDATE = "lastUpdateDate";
 
 
     static List<Post> getAllPosts(SQLiteDatabase db) {
@@ -37,6 +38,8 @@ public class PostSql {
             int likesIndex = cursor.getColumnIndex(POST_LIKES);
             int activeIndex = cursor.getColumnIndex(POST_ACTIVE);
             int picUrlIndex = cursor.getColumnIndex(POST_PICURL);
+            int lastUpdateDateIndex  = cursor.getColumnIndex(POST_LAST_UPDATE);
+
 
             do {
 
@@ -47,6 +50,7 @@ public class PostSql {
                 pst.setDescription(cursor.getString(descriptionIndex));
                 pst.setNumOfLikes(cursor.getInt(likesIndex));
                 pst.setPostPicUrl(cursor.getString(picUrlIndex));
+                pst.setLastUpdateDate(cursor.getDouble(lastUpdateDateIndex));
 
                 list.add(pst);
 
@@ -65,6 +69,7 @@ public class PostSql {
         values.put(POST_DESCRIPTION, pst.getDescription());
         values.put(POST_LIKES,pst.getNumOfLikes());
         values.put(POST_PICURL,pst.getPostPicUrl());
+        values.put(POST_LAST_UPDATE,pst.getLastUpdateDate());
 
         long res = db.insert(POST_TABLE, null, values);
 
@@ -76,7 +81,7 @@ public class PostSql {
     }
 
     static Post getPost(SQLiteDatabase db, String pstId) {
-        String[] col = {POST_ID,POST_USER,POST_ACTIVE,POST_LIKES,POST_DESCRIPTION,POST_PICURL};
+        String[] col = {POST_ID,POST_USER,POST_ACTIVE,POST_LIKES,POST_DESCRIPTION,POST_PICURL,POST_LAST_UPDATE};
 
         Cursor cursor = db.query(POST_TABLE , col, POST_ID+"=?", new String[] {pstId}, null, null, null);
 
@@ -89,7 +94,7 @@ public class PostSql {
             int likesIndex = cursor.getColumnIndex(POST_LIKES);
             int activeIndex = cursor.getColumnIndex(POST_ACTIVE);
             int picUrlIndex = cursor.getColumnIndex(POST_PICURL);
-
+            int lastUpdateDateIndex  = cursor.getColumnIndex(POST_LAST_UPDATE);
 
 
             pst = new Post();
@@ -99,7 +104,7 @@ public class PostSql {
             pst.setDescription(cursor.getString(descriptionIndex));
             pst.setNumOfLikes(cursor.getInt(likesIndex));
             pst.setPostPicUrl(cursor.getString(picUrlIndex));
-
+            pst.setLastUpdateDate(cursor.getDouble(lastUpdateDateIndex));
 
         }
         return pst;
@@ -113,7 +118,8 @@ public class PostSql {
                 POST_LIKES + " NUMBER, "+
                 POST_DESCRIPTION + " TEXT, " +
                 POST_USER + " TEXT, " +
-                POST_PICURL  + " TEXT " +
+                POST_PICURL  + " TEXT, " +
+                POST_LAST_UPDATE  + " NUMBER " +
                 ");");
     }
 
