@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,6 +30,8 @@ import android.widget.Toast;
 
 import com.example.edelsteindo.androidproject.Model.Model;
 import com.example.edelsteindo.androidproject.Model.Post;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -54,6 +57,8 @@ public class PostsListFragment extends android.app.Fragment {
 
     static final int REQUEST_WRITE_STORAGE = 11;
 
+    private FirebaseUser currentUser ;
+    private FirebaseAuth mAuth;
 
     private Fragment fragment;
 
@@ -65,13 +70,13 @@ public class PostsListFragment extends android.app.Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAuth=FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
         setHasOptionsMenu(true);
 
         if (getArguments() != null) {
 
         }
-        Log.d("f", "onCreate: ");
-
     }
 
     @Override
@@ -148,6 +153,25 @@ public class PostsListFragment extends android.app.Fragment {
 
         adapter = new PostListAdapter();
         list.setAdapter(adapter);
+
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Post post = data.get(position);
+                String username = currentUser.getEmail();
+
+                if(!post.getLikedUsers().contains(username)){
+                    post.addLikedUser(username);
+                    post.incNumOfLikes();
+                    Model.instace.updatePost(post);
+                }
+                else{
+                    post.removeLikedUser(username);
+                    post.decNumOfLikes();
+                    Model.instace.updatePost(post);
+                }
+            }
+        });
 
         boolean hasPermission = (ContextCompat.checkSelfPermission(getActivity(),
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==

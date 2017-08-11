@@ -43,9 +43,10 @@ public class AddPostFragment extends Fragment {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private Button upload_btn ;
     private Button upload_pic;
-    FirebaseUser currentUser ;
+    private FirebaseUser currentUser ;
     private FirebaseAuth mAuth;
-     public AddPostFragment() {
+
+    public AddPostFragment() {
         // Required empty public constructor
     }
 
