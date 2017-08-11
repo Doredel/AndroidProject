@@ -50,7 +50,7 @@ public class Model {
     }
 
     public void updatePost(Post post) {
-        this.updatePost(post);
+        this.modelFirebase.updatePost(post);
     }
 
     public interface GetPostCallback{

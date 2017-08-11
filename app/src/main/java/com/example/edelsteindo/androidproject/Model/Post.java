@@ -1,5 +1,7 @@
 package com.example.edelsteindo.androidproject.Model;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -14,12 +16,15 @@ public class Post {
     private String description;
     private String user;
     public double lastUpdateDate;
+    List<String> likedUsers;
 
     public Post() {
+        this.likedUsers = new LinkedList<String>();
         genRandomId();
     }
 
     public Post(Post post) {
+        this.likedUsers = new LinkedList<String>();
         this.setId(post.getId());
         this.setUser(post.getUser());
         this.setPostPicUrl(post.getPostPicUrl());
@@ -31,6 +36,7 @@ public class Post {
 
 
     public Post(String user, String description, String postPicUrl, int numOfLikes, boolean active) {
+        this.likedUsers = new LinkedList<String>();
         genRandomId();
         this.postPicUrl = postPicUrl;
         this.numOfLikes = numOfLikes;
@@ -64,6 +70,14 @@ public class Post {
         this.numOfLikes = numOfLikes;
     }
 
+    public void incNumOfLikes(){
+        this.numOfLikes++;
+    }
+
+    public void decNumOfLikes(){
+        this.numOfLikes--;
+    }
+
     public boolean isActive() {
         return active;
     }
@@ -94,6 +108,23 @@ public class Post {
 
     public void setLastUpdateDate(double lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public List<String> getLikedUsers() {
+        return likedUsers;
+    }
+
+    public void setLikedUsers(List<String> likedUsers) {
+        this.likedUsers.clear();
+        this.likedUsers.addAll(likedUsers);
+    }
+
+    public void addLikedUser(String username) {
+        this.likedUsers.add(username);
+    }
+
+    public void removeLikedUser(String username) {
+        this.likedUsers.remove(username);
     }
 
     private void genRandomId(){
