@@ -24,8 +24,14 @@ public class UserPostSql {
     static void updateAllUsers(SQLiteDatabase db, Post post) {
         List<String> users = getAllUsers(db,post.getId());
         List<String> postUsers = new LinkedList<String>();
-        ContentValues values;
 
+        addNewLikes(db,post,users,postUsers);
+
+        removeOldLikes(db,post,users,postUsers);
+    }
+
+    static void addNewLikes(SQLiteDatabase db, Post post, List<String> users, List<String> postUsers){
+        ContentValues values;
         postUsers.addAll(post.getLikedUsers());
         postUsers.removeAll(users);
 
@@ -37,7 +43,9 @@ public class UserPostSql {
 
             db.insert(USER_POST_TABLE, null, values);
         }
+    }
 
+    static void removeOldLikes(SQLiteDatabase db, Post post, List<String> users, List<String> postUsers){
         postUsers.addAll(post.getLikedUsers());
         users.removeAll(postUsers);
 
@@ -73,7 +81,7 @@ public class UserPostSql {
     static public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + USER_POST_TABLE +
                 " (" +
-                USER_POST_ID + " NUMBER PRIMARY KEY, " +
+                USER_POST_ID + " NUMBER NOT NULL AUTO_INCREMENT, " +
                 USER_POST_POST_ID + " TEXT, " +
                 USER_POST_USER_EMAIL + " TEXT "+
                 ");");
