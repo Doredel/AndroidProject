@@ -44,6 +44,7 @@ public class PostSql {
             do {
 
                 Post pst = new Post();
+
                 pst.setId(cursor.getString(idIndex));
                 pst.setUser(cursor.getString(userIndex));
                 pst.setActive((cursor.getInt(activeIndex) == 1));
@@ -51,6 +52,7 @@ public class PostSql {
                 pst.setNumOfLikes(cursor.getInt(likesIndex));
                 pst.setPostPicUrl(cursor.getString(picUrlIndex));
                 pst.setLastUpdateDate(cursor.getDouble(lastUpdateDateIndex));
+                pst.setLikedUsers(UserPostSql.getAllUsers(db,pst.getId()));
 
                 list.add(pst);
 
@@ -70,6 +72,7 @@ public class PostSql {
         values.put(POST_LIKES,pst.getNumOfLikes());
         values.put(POST_PICURL,pst.getPostPicUrl());
         values.put(POST_LAST_UPDATE,pst.getLastUpdateDate());
+        UserPostSql.updateAllUsers(db,pst);
 
         long res = db.insert(POST_TABLE, null, values);
 
@@ -77,6 +80,7 @@ public class PostSql {
     }
 
     static void removePost(SQLiteDatabase db, String id) {
+        UserPostSql.removePost(db,id);
         db.execSQL("delete from "+POST_TABLE+" where "+POST_ID+"="+"'"+id+"';");
     }
 
@@ -105,7 +109,7 @@ public class PostSql {
             pst.setNumOfLikes(cursor.getInt(likesIndex));
             pst.setPostPicUrl(cursor.getString(picUrlIndex));
             pst.setLastUpdateDate(cursor.getDouble(lastUpdateDateIndex));
-
+            pst.setLikedUsers(UserPostSql.getAllUsers(db,pst.getId()));
         }
         return pst;
     }

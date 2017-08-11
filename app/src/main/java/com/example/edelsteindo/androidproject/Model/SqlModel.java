@@ -19,11 +19,13 @@ public class SqlModel extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         PostSql.onCreate(db);
+        UserPostSql.onCreate(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         PostSql.onUpgrade(db, oldVersion, newVersion);
+        UserPostSql.onUpgrade(db,oldVersion,newVersion);
     }
 
 }
