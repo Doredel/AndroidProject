@@ -1,5 +1,9 @@
 package com.example.edelsteindo.androidproject.Model;
 
+import java.security.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -15,16 +19,18 @@ public class Post {
     private boolean active;
     private String description;
     private String user;
-    public double lastUpdateDate;
-    List<String> likedUsers;
+    private double lastUpdateDate;
+    private List<String> likedUsers;
+    private long timeMs;
+
 
     public Post() {
-        this.likedUsers = new LinkedList<String>();
         genRandomId();
+        this.likedUsers = new LinkedList<String>();
+        this.setTimeMs(GregorianCalendar.getInstance().getTimeInMillis());
     }
 
     public Post(Post post) {
-        this.likedUsers = new LinkedList<String>();
         this.setId(post.getId());
         this.setUser(post.getUser());
         this.setPostPicUrl(post.getPostPicUrl());
@@ -32,18 +38,21 @@ public class Post {
         this.setDescription(post.getDescription());
         this.setActive(post.isActive());
         this.setLastUpdateDate(post.getLastUpdateDate());
+        this.setLikedUsers(post.getLikedUsers());
+        this.setTimeMs(post.getTimeMs());
     }
 
 
     public Post(String user, String description, String postPicUrl, int numOfLikes, boolean active) {
-        this.likedUsers = new LinkedList<String>();
         genRandomId();
+        this.likedUsers = new LinkedList<String>();
         this.postPicUrl = postPicUrl;
         this.numOfLikes = numOfLikes;
         this.active = active;
         this.description = description;
         this.user = user;
         this.setLastUpdateDate(0);
+        this.setTimeMs(GregorianCalendar.getInstance().getTimeInMillis());
     }
 
     public String getId() {
@@ -125,6 +134,24 @@ public class Post {
 
     public void removeLikedUser(String username) {
         this.likedUsers.remove(username);
+    }
+
+    public long getTimeMs() {
+        return timeMs;
+    }
+
+    public void setTimeMs(long timeMs) {
+        this.timeMs = timeMs;
+    }
+
+    public Calendar getDateTime(){
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTimeInMillis(this.getTimeMs());
+        return calendar;
+    }
+
+    public void setDateTime(Calendar calendar){
+        this.setTimeMs(calendar.getTimeInMillis());
     }
 
     private void genRandomId(){
