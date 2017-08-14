@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 
@@ -26,6 +27,7 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +36,7 @@ import com.example.edelsteindo.androidproject.Model.Post;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -263,12 +266,12 @@ public class PostsListFragment extends android.app.Fragment {
                 convertView = inflater.inflate(R.layout.post_list_row,null);
             }
 
-
             postPic = (ImageView) convertView.findViewById(R.id.postPic);
             TextView userName = (TextView) convertView.findViewById(R.id.userName);
             TextView likesNum = (TextView) convertView.findViewById(R.id.likesNum);
             TextView isActive = (TextView) convertView.findViewById(R.id.isActive);
             TextView description = (TextView) convertView.findViewById(R.id.description);
+            final ProgressBar progressBar =(ProgressBar) convertView.findViewById(R.id.progress_bar);
 
             final Post p = data.get(position);
             userName.setText(p.getUser());
@@ -277,8 +280,9 @@ public class PostsListFragment extends android.app.Fragment {
             description.setText(p.getDescription());
 
             postPic.setTag(p.getPostPicUrl());
-            postPic.setImageResource(R.drawable.default_pic);
 
+            postPic.setImageResource(R.drawable.default_pic);
+            progressBar.setVisibility(View.VISIBLE);
             if (p.getPostPicUrl() != null && !p.getPostPicUrl().isEmpty() && !p.getPostPicUrl().equals("")){
                 Model.instace.getImage(p.getPostPicUrl(), new Model.GetImageListener() {
                     @Override
@@ -286,6 +290,7 @@ public class PostsListFragment extends android.app.Fragment {
                         String tagUrl = postPic.getTag().toString();
                         if (tagUrl.equals(p.getPostPicUrl())) {
                             postPic.setImageBitmap(image);
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
 
@@ -295,11 +300,11 @@ public class PostsListFragment extends android.app.Fragment {
                 });
             }
 
-
             return convertView;
 
         }
     }
+
 
 }
 
