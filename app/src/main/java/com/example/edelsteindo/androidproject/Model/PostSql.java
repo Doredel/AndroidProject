@@ -23,6 +23,7 @@ public class PostSql {
     private static final String POST_LIKES = "likes";
     private static final String POST_USER = "user";
     private static final String POST_PICURL = "pic_url";
+    private static final String POST_DATE = "date";
     private static final String POST_LAST_UPDATE = "lastUpdateDate";
 
 
@@ -38,6 +39,7 @@ public class PostSql {
             int likesIndex = cursor.getColumnIndex(POST_LIKES);
             int activeIndex = cursor.getColumnIndex(POST_ACTIVE);
             int picUrlIndex = cursor.getColumnIndex(POST_PICURL);
+            int dateIndex = cursor.getColumnIndex(POST_DATE);
             int lastUpdateDateIndex  = cursor.getColumnIndex(POST_LAST_UPDATE);
 
 
@@ -53,6 +55,7 @@ public class PostSql {
                 pst.setPostPicUrl(cursor.getString(picUrlIndex));
                 pst.setLastUpdateDate(cursor.getDouble(lastUpdateDateIndex));
                 pst.setLikedUsers(UserPostSql.getAllUsers(db,pst.getId()));
+                pst.setTimeMs(cursor.getLong(dateIndex));
 
                 list.add(pst);
 
@@ -73,6 +76,7 @@ public class PostSql {
         values.put(POST_PICURL,pst.getPostPicUrl());
         values.put(POST_LAST_UPDATE,pst.getLastUpdateDate());
         UserPostSql.updateAllUsers(db,pst);
+        values.put(POST_DATE,pst.getTimeMs());
 
         long res = db.insert(POST_TABLE, null, values);
 
@@ -85,7 +89,7 @@ public class PostSql {
     }
 
     static Post getPost(SQLiteDatabase db, String pstId) {
-        String[] col = {POST_ID,POST_USER,POST_ACTIVE,POST_LIKES,POST_DESCRIPTION,POST_PICURL,POST_LAST_UPDATE};
+        String[] col = {POST_ID,POST_USER,POST_ACTIVE,POST_LIKES,POST_DESCRIPTION,POST_PICURL,POST_LAST_UPDATE,POST_DATE};
 
         Cursor cursor = db.query(POST_TABLE , col, POST_ID+"=?", new String[] {pstId}, null, null, null);
 
@@ -99,6 +103,7 @@ public class PostSql {
             int activeIndex = cursor.getColumnIndex(POST_ACTIVE);
             int picUrlIndex = cursor.getColumnIndex(POST_PICURL);
             int lastUpdateDateIndex  = cursor.getColumnIndex(POST_LAST_UPDATE);
+            int dateIndex = cursor.getColumnIndex(POST_DATE);
 
 
             pst = new Post();
@@ -110,6 +115,7 @@ public class PostSql {
             pst.setPostPicUrl(cursor.getString(picUrlIndex));
             pst.setLastUpdateDate(cursor.getDouble(lastUpdateDateIndex));
             pst.setLikedUsers(UserPostSql.getAllUsers(db,pst.getId()));
+            pst.setTimeMs(cursor.getLong(dateIndex));
         }
         return pst;
     }
@@ -123,6 +129,7 @@ public class PostSql {
                 POST_DESCRIPTION + " TEXT, " +
                 POST_USER + " TEXT, " +
                 POST_PICURL  + " TEXT, " +
+                POST_DATE + " INTEGER ,"+
                 POST_LAST_UPDATE  + " NUMBER " +
                 ");");
     }
@@ -132,13 +139,6 @@ public class PostSql {
         onCreate(db);
     }
 
-    private static String calendarToString(Calendar cal){
-        return cal.get(cal.YEAR)+"-"+cal.get(cal.MONTH)+"-"+cal.get(cal.DAY_OF_MONTH)+"-"+cal.get(cal.HOUR_OF_DAY)+"-"+cal.get(cal.MINUTE)+"-"+cal.get(cal.SECOND);
-    }
 
-    private static Calendar stringToCalendar(String str){
-        String[] fields = str.split("-");
-        return new GregorianCalendar(Integer.parseInt(fields[0]),Integer.parseInt(fields[1]),Integer.parseInt(fields[2]),Integer.parseInt(fields[3]),Integer.parseInt(fields[4]),Integer.parseInt(fields[5]));
-    }
 }
 
