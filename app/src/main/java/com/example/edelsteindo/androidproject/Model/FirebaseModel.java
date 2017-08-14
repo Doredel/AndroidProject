@@ -39,6 +39,7 @@ public class FirebaseModel {
         value.put("user", post.getUser());
         value.put("lastUpdateDate", ServerValue.TIMESTAMP);
         value.put("likedUsers",post.getLikedUsers());
+        value.put("timeMs", post.getTimeMs());
 
         return value;
     }
