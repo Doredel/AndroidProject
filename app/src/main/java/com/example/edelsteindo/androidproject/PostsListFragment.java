@@ -36,6 +36,7 @@ import com.example.edelsteindo.androidproject.Model.Post;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,6 +57,7 @@ public class PostsListFragment extends android.app.Fragment {
     private ListView list;
     private EditText seacrh_text;
     private PostListAdapter adapter;
+    private ProgressBar progressBar;
 
     private ImageView postPic;
 
@@ -88,7 +90,7 @@ public class PostsListFragment extends android.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View contextView =inflater.inflate(R.layout.fragment_posts_list, container, false);
-
+        progressBar =(ProgressBar) contextView.findViewById(R.id.progress_bar);
         seacrh_text = (EditText)contextView.findViewById(R.id.search_text);
         seacrh_text.setVisibility(View.GONE);
         seacrh_text.addTextChangedListener(new TextWatcher() {
@@ -106,6 +108,12 @@ public class PostsListFragment extends android.app.Fragment {
                     public void onComplete(List<Post> list) {
                         data.clear();
                         data.addAll(list);
+                        Collections.sort(data, new Comparator<Post>() {
+                            @Override
+                            public int compare(Post post, Post t1) {
+                                return (int)(t1.getTimeMs() - post.getTimeMs());
+                            }
+                        });
                         adapter.notifyDataSetChanged();
 
                         List<Post> temp = new LinkedList<Post>();
@@ -118,6 +126,12 @@ public class PostsListFragment extends android.app.Fragment {
                         }
                         data.clear();
                         data.addAll(temp);
+                        Collections.sort(data, new Comparator<Post>() {
+                            @Override
+                            public int compare(Post post, Post t1) {
+                                return (int)(t1.getTimeMs() - post.getTimeMs());
+                            }
+                        });
                         String st =data.size()+"";
                         Log.d("total posts",st);
                         adapter.notifyDataSetChanged();
@@ -142,12 +156,17 @@ public class PostsListFragment extends android.app.Fragment {
         Log.d("f", "onCreateView: ");
         list = (ListView)contextView.findViewById(R.id.post_list);
         //getallposts isn't implemented yet
-
         Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
             @Override
             public void onComplete(List<Post> list) {
                 data.clear();
                 data.addAll(list);
+                Collections.sort(data, new Comparator<Post>() {
+                    @Override
+                    public int compare(Post post, Post t1) {
+                        return (int)(t1.getTimeMs() - post.getTimeMs());
+                    }
+                });
                 adapter.notifyDataSetChanged();
             }
 
@@ -158,7 +177,6 @@ public class PostsListFragment extends android.app.Fragment {
 
         adapter = new PostListAdapter();
         list.setAdapter(adapter);
-
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -189,6 +207,12 @@ public class PostsListFragment extends android.app.Fragment {
 
 
         return contextView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
     }
 
     @Override
@@ -231,6 +255,12 @@ public class PostsListFragment extends android.app.Fragment {
 
                         }
                     });
+                    Collections.sort(data, new Comparator<Post>() {
+                        @Override
+                        public int compare(Post post, Post t1) {
+                            return (int)(t1.getTimeMs() - post.getTimeMs());
+                        }
+                    });
                     adapter.notifyDataSetChanged();
                 }
 
@@ -271,7 +301,7 @@ public class PostsListFragment extends android.app.Fragment {
             TextView likesNum = (TextView) convertView.findViewById(R.id.likesNum);
             TextView isActive = (TextView) convertView.findViewById(R.id.isActive);
             TextView description = (TextView) convertView.findViewById(R.id.description);
-            final ProgressBar progressBar =(ProgressBar) convertView.findViewById(R.id.progress_bar);
+            final ProgressBar progressBar =(ProgressBar) convertView.findViewById(R.id.progress_bar_row);
 
             final Post p = data.get(position);
             userName.setText(p.getUser());
