@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
@@ -58,7 +59,6 @@ public class PostsListFragment extends android.app.Fragment {
     private EditText seacrh_text;
     private PostListAdapter adapter;
     private ProgressBar progressBar;
-
     private ImageView postPic;
 
     static final int REQUEST_WRITE_STORAGE = 11;
@@ -80,6 +80,7 @@ public class PostsListFragment extends android.app.Fragment {
         currentUser = mAuth.getCurrentUser();
         setHasOptionsMenu(true);
 
+
         if (getArguments() != null) {
 
         }
@@ -90,9 +91,9 @@ public class PostsListFragment extends android.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View contextView =inflater.inflate(R.layout.fragment_posts_list, container, false);
-        progressBar =(ProgressBar) contextView.findViewById(R.id.progress_bar);
         seacrh_text = (EditText)contextView.findViewById(R.id.search_text);
         seacrh_text.setVisibility(View.GONE);
+        progressBar=(ProgressBar)contextView.findViewById(R.id.progress_bar);
         seacrh_text.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -168,6 +169,7 @@ public class PostsListFragment extends android.app.Fragment {
                     }
                 });
                 adapter.notifyDataSetChanged();
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -177,6 +179,8 @@ public class PostsListFragment extends android.app.Fragment {
 
         adapter = new PostListAdapter();
         list.setAdapter(adapter);
+
+
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -204,15 +208,12 @@ public class PostsListFragment extends android.app.Fragment {
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_STORAGE);
         }
 
-
-
         return contextView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
     }
 
     @Override
@@ -267,7 +268,6 @@ public class PostsListFragment extends android.app.Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
-
 
 
 
