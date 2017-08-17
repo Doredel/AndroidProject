@@ -30,7 +30,7 @@
             android:layout_weight="3">
         </ImageView>
         <ProgressBar
-            android:id="@+id/progress_bar"
+            android:id="@+id/progress_bar_row"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_gravity="center"
