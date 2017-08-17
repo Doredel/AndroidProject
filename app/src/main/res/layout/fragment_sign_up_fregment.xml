@@ -87,5 +87,10 @@
             android:text="Sign Up"/>
 
     </LinearLayout>
-
+    <ProgressBar
+        android:id="@+id/progress_bar_signUp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+    </ProgressBar>
 </LinearLayout>

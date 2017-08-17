@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,6 +35,7 @@ public class SignInFregment extends Fragment {
     private Fragment fragment;
     private EditText password;
     private EditText userName;
+    private ProgressBar progressBar;
     private FirebaseAuth mAuth;
     public SignInFregment() {
         // Required empty public constructor
@@ -63,6 +65,8 @@ public class SignInFregment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View contentView = inflater.inflate(R.layout.fragment_sign_in_fregment, container, false);
+        progressBar = (ProgressBar) contentView.findViewById(R.id.progress_bar_login);
+        progressBar.setVisibility(View.GONE);
         password = (EditText) contentView.findViewById(R.id.signInPass);
         userName = (EditText) contentView.findViewById(R.id.signInUserName);
         //setting the buttons events
@@ -74,6 +78,7 @@ public class SignInFregment extends Fragment {
             {
                 if(!(password.getText().toString().matches("")||userName.getText().toString().matches("")))
                 {
+                    progressBar.setVisibility(View.VISIBLE);
                     mAuth.signInWithEmailAndPassword(userName.getText().toString(), password.getText().toString())
                             .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                                 @Override
@@ -81,11 +86,13 @@ public class SignInFregment extends Fragment {
                                     if (task.isSuccessful()) {
                                         // Sign in success, update UI with the signed-in user's information
                                         Log.d("TAG", "signInWithEmail:success");
+                                        progressBar.setVisibility(View.GONE);
                                         Intent intent = new Intent(getActivity(),MainActivity.class);
                                         startActivity(intent);
                                     } else {
                                         // If sign in fails, display a message to the user.
                                         Log.w("TAG","signInWithEmail:failure", task.getException());
+                                        progressBar.setVisibility(View.GONE);
                                         Toast.makeText(getActivity(), task.getException().getMessage(),
                                                 Toast.LENGTH_SHORT).show();
                                     }

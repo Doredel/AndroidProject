@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,6 +35,7 @@ public class SignUpFregment extends Fragment {
     private  EditText email;
     private  EditText password;
     private  EditText confrimPassword;
+    private ProgressBar progressBar;
     private  Button sign_up_btn;
     public SignUpFregment() {
         // Required empty public constructor
@@ -62,6 +64,8 @@ public class SignUpFregment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view =inflater.inflate(R.layout.fragment_sign_up_fregment, container, false);
+        progressBar = (ProgressBar) view.findViewById(R.id.progress_bar_signUp);
+        progressBar.setVisibility(View.GONE);
         email =(EditText)view.findViewById(R.id.newUserName);
         password = (EditText)view.findViewById(R.id.newPassword);
         confrimPassword = (EditText)view.findViewById(R.id.newConfrimPassword);
@@ -79,6 +83,7 @@ public class SignUpFregment extends Fragment {
                         //Check if the email is valid
                         if(isValidEmail(email.getText()))
                         {
+                            progressBar.setVisibility(View.VISIBLE);
                             mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                                     .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                                         @Override
@@ -86,12 +91,13 @@ public class SignUpFregment extends Fragment {
                                             if (task.isSuccessful()) {
                                                 // Sign in success, update UI with the signed-in user's information
                                                 Log.d("tag", "createUserWithEmail:success");
-
+                                                progressBar.setVisibility(View.GONE);
                                                 //open the post list activity
                                                 Intent intent = new Intent(getActivity(),MainActivity.class);
                                                 startActivity(intent);
                                             } else {
                                                 // If sign in fails, display a message to the user.
+                                                progressBar.setVisibility(View.GONE);
                                                 Toast.makeText(getActivity(), "Authentication failed." + task.getException().getMessage(),
                                                         Toast.LENGTH_SHORT).show();
                                                 //updateUI(null);
