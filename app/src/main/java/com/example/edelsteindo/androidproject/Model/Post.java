@@ -28,6 +28,7 @@ public class Post {
         genRandomId();
         this.likedUsers = new LinkedList<String>();
         this.setTimeMs(GregorianCalendar.getInstance().getTimeInMillis());
+
     }
 
     public Post(Post post) {

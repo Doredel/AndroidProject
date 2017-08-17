@@ -81,7 +81,7 @@ public class UserPostSql {
     static public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + USER_POST_TABLE +
                 " (" +
-                USER_POST_ID + " NUMBER NOT NULL AUTO_INCREMENT, " +
+                USER_POST_ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 USER_POST_POST_ID + " TEXT, " +
                 USER_POST_USER_EMAIL + " TEXT "+
                 ");");

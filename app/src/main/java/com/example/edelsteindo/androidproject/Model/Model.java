@@ -2,10 +2,12 @@ package com.example.edelsteindo.androidproject.Model;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 import android.webkit.URLUtil;
 
 import com.example.edelsteindo.androidproject.MyApplication;
@@ -39,7 +41,7 @@ public class Model {
 
     public void addPost(Post post) {
         this.modelFirebase.addPost(post);
-        //PostSql.addPost(modelSql.getWritableDatabase(),post);
+        PostSql.addPost(modelSql.getWritableDatabase(),post);
         //this.modelMem.addPost(post);
     }
 
@@ -51,6 +53,7 @@ public class Model {
 
     public void updatePost(Post post) {
         this.modelFirebase.updatePost(post);
+        //edit_sql
     }
 
     public interface GetPostCallback{
@@ -80,10 +83,40 @@ public class Model {
     }
     public void getAllPostsAndObserve(final GetAllPostsAndObserveCallback callback){
         //return PostSql.getAllPosts(modelSql.getReadableDatabase());
+
+        //1. get local lastUpdateTade
+        SharedPreferences pref = MyApplication.getMyContext().getSharedPreferences("TAG", Context.MODE_PRIVATE);
+        final double lastUpdateDate = pref.getFloat("PostsLastUpdateDate",0);
+        //Log.d("TAG","lastUpdateDate: " + lastUpdateDate);
+
         modelFirebase.getAllPostsAndObserve(new FirebaseModel.GetAllPostsAndObserveCallback() {
             @Override
-            public void onComplete(List<Post> list) {
-                callback.onComplete(list);
+            public void onComplete(List<Post> list)
+            {
+                double newLastUpdateDate = lastUpdateDate;
+                Log.d("TAG", "FB detch:" + list.size());
+                for (Post post: list) {
+
+                    //3. update the local db
+                    PostSql.addPost(modelSql.getWritableDatabase(),post);
+                    //4. update the lastUpdateTade
+                    if(newLastUpdateDate < post.getLastUpdateDate()) {
+                        newLastUpdateDate = post.getLastUpdateDate();
+                    }
+
+                }
+                SharedPreferences.Editor prefEd = MyApplication.getMyContext().getSharedPreferences("TAG",
+                        Context.MODE_PRIVATE).edit();
+                prefEd.putFloat("PostsLastUpdateDate", (float) newLastUpdateDate);
+                prefEd.commit();
+                Log.d("TAG","StudnetsLastUpdateDate: " + newLastUpdateDate);
+
+
+                //5. read from local db
+                List<Post> data = PostSql.getAllPosts(modelSql.getReadableDatabase());
+
+                //6. return list of students
+                callback.onComplete(data);
             }
 
             @Override

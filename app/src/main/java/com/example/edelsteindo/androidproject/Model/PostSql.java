@@ -120,6 +120,8 @@ public class PostSql {
         return pst;
     }
 
+    //todo boom boom edit
+
     static public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + POST_TABLE +
                 " (" +
