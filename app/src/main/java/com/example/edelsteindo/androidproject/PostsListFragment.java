@@ -3,8 +3,10 @@ package com.example.edelsteindo.androidproject;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 
@@ -20,11 +22,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +37,8 @@ import com.example.edelsteindo.androidproject.Model.Post;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,7 +58,7 @@ public class PostsListFragment extends android.app.Fragment {
     private ListView list;
     private EditText seacrh_text;
     private PostListAdapter adapter;
-
+    private ProgressBar progressBar;
     private ImageView postPic;
 
     static final int REQUEST_WRITE_STORAGE = 11;
@@ -74,6 +80,7 @@ public class PostsListFragment extends android.app.Fragment {
         currentUser = mAuth.getCurrentUser();
         setHasOptionsMenu(true);
 
+
         if (getArguments() != null) {
 
         }
@@ -84,9 +91,9 @@ public class PostsListFragment extends android.app.Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View contextView =inflater.inflate(R.layout.fragment_posts_list, container, false);
-
         seacrh_text = (EditText)contextView.findViewById(R.id.search_text);
         seacrh_text.setVisibility(View.GONE);
+        progressBar=(ProgressBar)contextView.findViewById(R.id.progress_bar);
         seacrh_text.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -102,6 +109,12 @@ public class PostsListFragment extends android.app.Fragment {
                     public void onComplete(List<Post> list) {
                         data.clear();
                         data.addAll(list);
+                        Collections.sort(data, new Comparator<Post>() {
+                            @Override
+                            public int compare(Post post, Post t1) {
+                                return (int)(t1.getTimeMs() - post.getTimeMs());
+                            }
+                        });
                         adapter.notifyDataSetChanged();
 
                         List<Post> temp = new LinkedList<Post>();
@@ -114,6 +127,12 @@ public class PostsListFragment extends android.app.Fragment {
                         }
                         data.clear();
                         data.addAll(temp);
+                        Collections.sort(data, new Comparator<Post>() {
+                            @Override
+                            public int compare(Post post, Post t1) {
+                                return (int)(t1.getTimeMs() - post.getTimeMs());
+                            }
+                        });
                         String st =data.size()+"";
                         Log.d("total posts",st);
                         adapter.notifyDataSetChanged();
@@ -121,6 +140,7 @@ public class PostsListFragment extends android.app.Fragment {
 
                     @Override
                     public void onCancel() {
+                        data.clear();
                         Log.d("error","blblblblblbl");
                     }
                 });
@@ -137,13 +157,19 @@ public class PostsListFragment extends android.app.Fragment {
         Log.d("f", "onCreateView: ");
         list = (ListView)contextView.findViewById(R.id.post_list);
         //getallposts isn't implemented yet
-
         Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
             @Override
             public void onComplete(List<Post> list) {
                 data.clear();
                 data.addAll(list);
+                Collections.sort(data, new Comparator<Post>() {
+                    @Override
+                    public int compare(Post post, Post t1) {
+                        return (int)(t1.getTimeMs() - post.getTimeMs());
+                    }
+                });
                 adapter.notifyDataSetChanged();
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -153,6 +179,7 @@ public class PostsListFragment extends android.app.Fragment {
 
         adapter = new PostListAdapter();
         list.setAdapter(adapter);
+
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -181,9 +208,12 @@ public class PostsListFragment extends android.app.Fragment {
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_STORAGE);
         }
 
-
-
         return contextView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -214,6 +244,7 @@ public class PostsListFragment extends android.app.Fragment {
                 } else
                 {
                     seacrh_text.setVisibility(View.VISIBLE);
+                    data.clear();
                     Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
                         @Override
                         public void onComplete(List<Post> list) {
@@ -225,13 +256,19 @@ public class PostsListFragment extends android.app.Fragment {
 
                         }
                     });
+                    Collections.sort(data, new Comparator<Post>() {
+                        @Override
+                        public int compare(Post post, Post t1) {
+                            return (int)(t1.getTimeMs() - post.getTimeMs());
+                        }
+                    });
                     adapter.notifyDataSetChanged();
                 }
-
 
         }
         return super.onOptionsItemSelected(item);
     }
+
 
 
     class PostListAdapter extends BaseAdapter {
@@ -259,12 +296,12 @@ public class PostsListFragment extends android.app.Fragment {
                 convertView = inflater.inflate(R.layout.post_list_row,null);
             }
 
-
             postPic = (ImageView) convertView.findViewById(R.id.postPic);
             TextView userName = (TextView) convertView.findViewById(R.id.userName);
             TextView likesNum = (TextView) convertView.findViewById(R.id.likesNum);
             TextView isActive = (TextView) convertView.findViewById(R.id.isActive);
             TextView description = (TextView) convertView.findViewById(R.id.description);
+            final ProgressBar progressBar =(ProgressBar) convertView.findViewById(R.id.progress_bar_row);
 
             final Post p = data.get(position);
             userName.setText(p.getUser());
@@ -273,8 +310,9 @@ public class PostsListFragment extends android.app.Fragment {
             description.setText(p.getDescription());
 
             postPic.setTag(p.getPostPicUrl());
-            postPic.setImageResource(R.drawable.default_pic);
 
+            postPic.setImageResource(R.drawable.default_pic);
+            progressBar.setVisibility(View.VISIBLE);
             if (p.getPostPicUrl() != null && !p.getPostPicUrl().isEmpty() && !p.getPostPicUrl().equals("")){
                 Model.instace.getImage(p.getPostPicUrl(), new Model.GetImageListener() {
                     @Override
@@ -282,6 +320,7 @@ public class PostsListFragment extends android.app.Fragment {
                         String tagUrl = postPic.getTag().toString();
                         if (tagUrl.equals(p.getPostPicUrl())) {
                             postPic.setImageBitmap(image);
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
 
@@ -291,11 +330,11 @@ public class PostsListFragment extends android.app.Fragment {
                 });
             }
 
-
             return convertView;
 
         }
     }
+
 
 }
 
