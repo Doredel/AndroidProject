@@ -29,6 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +60,7 @@ public class PostsListFragment extends android.app.Fragment {
     private EditText seacrh_text;
     private PostListAdapter adapter;
     private ProgressBar progressBar;
-    private ImageView postPic;
+
 
     static final int REQUEST_WRITE_STORAGE = 11;
 
@@ -296,7 +297,7 @@ public class PostsListFragment extends android.app.Fragment {
                 convertView = inflater.inflate(R.layout.post_list_row,null);
             }
 
-            postPic = (ImageView) convertView.findViewById(R.id.postPic);
+            final ImageView postPic = (ImageView) convertView.findViewById(R.id.postPic);
             TextView userName = (TextView) convertView.findViewById(R.id.userName);
             TextView likesNum = (TextView) convertView.findViewById(R.id.likesNum);
             TextView isActive = (TextView) convertView.findViewById(R.id.isActive);
@@ -320,8 +321,9 @@ public class PostsListFragment extends android.app.Fragment {
                         String tagUrl = postPic.getTag().toString();
                         if (tagUrl.equals(p.getPostPicUrl())) {
                             postPic.setImageBitmap(image);
-                            progressBar.setVisibility(View.GONE);
+
                         }
+                        progressBar.setVisibility(View.GONE);
                     }
 
                     @Override

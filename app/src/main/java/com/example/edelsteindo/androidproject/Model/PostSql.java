@@ -121,6 +121,22 @@ public class PostSql {
     }
 
     //todo boom boom edit
+    static boolean editPost(SQLiteDatabase db, Post pst) {
+        ContentValues values = new ContentValues();
+
+        values.put(POST_ID, pst.getId());
+        values.put(POST_USER, pst.getUser());
+        values.put(POST_ACTIVE, pst.isActive());
+        values.put(POST_DESCRIPTION, pst.getDescription());
+        values.put(POST_LIKES,pst.getNumOfLikes());
+        values.put(POST_PICURL,pst.getPostPicUrl());
+        values.put(POST_LAST_UPDATE,pst.getLastUpdateDate());
+        UserPostSql.updateAllUsers(db,pst);
+        values.put(POST_DATE,pst.getTimeMs());
+
+        long res = db.update(POST_TABLE,values,POST_ID+"="+pst.getId(), null);
+        return (res != 0);
+    }
 
     static public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + POST_TABLE +

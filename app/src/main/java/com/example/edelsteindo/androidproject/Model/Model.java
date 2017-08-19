@@ -47,13 +47,14 @@ public class Model {
 
     public void removePost(String id) {
         this.modelFirebase.removePost(id);
-        //PostSql.removePost(modelSql.getWritableDatabase(),id);
+        PostSql.removePost(modelSql.getWritableDatabase(),id);
         //this.modelMem.removePost(id);
     }
 
     public void updatePost(Post post) {
         this.modelFirebase.updatePost(post);
         //edit_sql
+        PostSql.editPost(modelSql.getWritableDatabase(),post);
     }
 
     public interface GetPostCallback{
@@ -65,6 +66,7 @@ public class Model {
         modelFirebase.getPost(stId, new FirebaseModel.GetPostCallback() {
             @Override
             public void onComplete(Post post) {
+
                 callback.onComplete(post);
             }
 
@@ -87,9 +89,9 @@ public class Model {
         //1. get local lastUpdateTade
         SharedPreferences pref = MyApplication.getMyContext().getSharedPreferences("TAG", Context.MODE_PRIVATE);
         final double lastUpdateDate = pref.getFloat("PostsLastUpdateDate",0);
-        //Log.d("TAG","lastUpdateDate: " + lastUpdateDate);
+        Log.d("TAG","lastUpdateDate: " + lastUpdateDate);
 
-        modelFirebase.getAllPostsAndObserve(new FirebaseModel.GetAllPostsAndObserveCallback() {
+        modelFirebase.getAllPostsAndObserve(lastUpdateDate, new FirebaseModel.GetAllPostsAndObserveCallback() {
             @Override
             public void onComplete(List<Post> list)
             {
@@ -98,7 +100,10 @@ public class Model {
                 for (Post post: list) {
 
                     //3. update the local db
-                    PostSql.addPost(modelSql.getWritableDatabase(),post);
+                    boolean res = PostSql.editPost(modelSql.getWritableDatabase(), post);
+                    if(!res) {
+                        PostSql.addPost(modelSql.getWritableDatabase(),post);
+                    }
                     //4. update the lastUpdateTade
                     if(newLastUpdateDate < post.getLastUpdateDate()) {
                         newLastUpdateDate = post.getLastUpdateDate();
@@ -164,12 +169,14 @@ public class Model {
             @Override
             public void onComplete(Bitmap bitmap) {
                 if (bitmap != null){
+                    Log.d("TAG","getImage from local success " + fileName);
                     listener.onSuccess(bitmap);
                 }else {
                     modelFirebase.getImage(url, new GetImageListener() {
                         @Override
                         public void onSuccess(Bitmap image) {
                             String fileName = URLUtil.guessFileName(url, null, null);
+                            Log.d("TAG","getImage from FB success " + fileName);
                             saveImageToFile(image,fileName);
                             listener.onSuccess(image);
                         }

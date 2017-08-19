@@ -93,7 +93,7 @@ public class FirebaseModel {
     public void getAllPostsAndObserve(final GetAllPostsAndObserveCallback callback) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("posts");
-        myRef.addValueEventListener(new ValueEventListener() {
+        ValueEventListener listener = myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Post> list = new LinkedList<Post>();
@@ -111,6 +111,29 @@ public class FirebaseModel {
         });
     }
 
+    public void getAllPostsAndObserve(double lastUpdateDate, final GetAllPostsAndObserveCallback callback) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("posts");
+
+        myRef.orderByChild("lastUpdateDate").startAt(lastUpdateDate)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        List<Post> list = new LinkedList<Post>();
+                        for (DataSnapshot snap : dataSnapshot.getChildren()) {
+                            Post post = snap.getValue(Post.class);
+                            list.add(post);
+                        }
+                        callback.onComplete(list);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
     //-------------------------------------------------------------------------------------
 
     public void saveImage(Bitmap imageBmp, String name, final Model.SaveImageListener listener){
@@ -124,12 +147,14 @@ public class FirebaseModel {
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(Exception exception) {
+                Log.d("TAG","shit");
                 listener.fail();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                Log.d("TAG",downloadUrl.toString());
                 listener.complete(downloadUrl.toString());
             }
         });
