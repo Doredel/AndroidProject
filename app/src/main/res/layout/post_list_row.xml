@@ -30,7 +30,6 @@
             android:id="@+id/postPic"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@color/colorAccent"
             android:background="#9999"
             android:layout_weight="3">
         </ImageView>
@@ -57,10 +56,10 @@
             android:layout_weight="1"
             />
         <TextView
-            android:id="@+id/isActive"
+            android:id="@+id/post_date"
             android:layout_width="1dp"
             android:layout_height="wrap_content"
-            android:text="is active"
+            android:text="date"
             android:layout_weight="1"/>
     </LinearLayout>
     <TextView

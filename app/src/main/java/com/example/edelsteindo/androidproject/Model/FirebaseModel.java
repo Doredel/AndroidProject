@@ -116,7 +116,7 @@ public class FirebaseModel {
         DatabaseReference myRef = database.getReference("posts");
 
         myRef.orderByChild("lastUpdateDate").startAt(lastUpdateDate)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+                .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         List<Post> list = new LinkedList<Post>();

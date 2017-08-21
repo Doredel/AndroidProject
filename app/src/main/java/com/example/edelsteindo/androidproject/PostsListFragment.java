@@ -38,10 +38,13 @@ import com.example.edelsteindo.androidproject.Model.Post;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -60,6 +63,8 @@ public class PostsListFragment extends android.app.Fragment {
     private EditText seacrh_text;
     private PostListAdapter adapter;
     private ProgressBar progressBar;
+
+    private boolean liked = false;
 
 
     static final int REQUEST_WRITE_STORAGE = 11;
@@ -80,11 +85,6 @@ public class PostsListFragment extends android.app.Fragment {
         mAuth=FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         setHasOptionsMenu(true);
-
-
-        if (getArguments() != null) {
-
-        }
     }
 
     @Override
@@ -97,9 +97,7 @@ public class PostsListFragment extends android.app.Fragment {
         progressBar=(ProgressBar)contextView.findViewById(R.id.progress_bar);
         seacrh_text.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(final CharSequence s, int start, int before, int count)
@@ -110,12 +108,8 @@ public class PostsListFragment extends android.app.Fragment {
                     public void onComplete(List<Post> list) {
                         data.clear();
                         data.addAll(list);
-                        Collections.sort(data, new Comparator<Post>() {
-                            @Override
-                            public int compare(Post post, Post t1) {
-                                return (int)(t1.getTimeMs() - post.getTimeMs());
-                            }
-                        });
+                        Collections.sort(data, new ListOrderComperator());
+
                         adapter.notifyDataSetChanged();
 
                         List<Post> temp = new LinkedList<Post>();
@@ -128,12 +122,7 @@ public class PostsListFragment extends android.app.Fragment {
                         }
                         data.clear();
                         data.addAll(temp);
-                        Collections.sort(data, new Comparator<Post>() {
-                            @Override
-                            public int compare(Post post, Post t1) {
-                                return (int)(t1.getTimeMs() - post.getTimeMs());
-                            }
-                        });
+                        Collections.sort(data, new ListOrderComperator());
                         String st =data.size()+"";
                         Log.d("total posts",st);
                         adapter.notifyDataSetChanged();
@@ -157,18 +146,13 @@ public class PostsListFragment extends android.app.Fragment {
 
         Log.d("f", "onCreateView: ");
         list = (ListView)contextView.findViewById(R.id.post_list);
-        //getallposts isn't implemented yet
+
         Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
             @Override
             public void onComplete(List<Post> list) {
                 data.clear();
                 data.addAll(list);
-                Collections.sort(data, new Comparator<Post>() {
-                    @Override
-                    public int compare(Post post, Post t1) {
-                        return (int)(t1.getTimeMs() - post.getTimeMs());
-                    }
-                });
+                Collections.sort(data, new ListOrderComperator());
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.GONE);
             }
@@ -198,6 +182,8 @@ public class PostsListFragment extends android.app.Fragment {
                     post.decNumOfLikes();
                     Model.instace.updatePost(post);
                 }
+                liked = true;
+                //adapter.notifyDataSetChanged();
             }
         });
 
@@ -249,6 +235,7 @@ public class PostsListFragment extends android.app.Fragment {
                     Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
                         @Override
                         public void onComplete(List<Post> list) {
+                            Log.d("TAG", "onComplete:  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                             data.addAll(list);
                         }
 
@@ -257,12 +244,7 @@ public class PostsListFragment extends android.app.Fragment {
 
                         }
                     });
-                    Collections.sort(data, new Comparator<Post>() {
-                        @Override
-                        public int compare(Post post, Post t1) {
-                            return (int)(t1.getTimeMs() - post.getTimeMs());
-                        }
-                    });
+                    Collections.sort(data, new ListOrderComperator());
                     adapter.notifyDataSetChanged();
                 }
 
@@ -271,6 +253,12 @@ public class PostsListFragment extends android.app.Fragment {
     }
 
 
+    class ListOrderComperator implements Comparator<Post>{
+        @Override
+        public int compare(Post o1, Post o2) {
+            return -1*(int)(o1.getTimeMs() - o2.getTimeMs());
+        }
+    }
 
     class PostListAdapter extends BaseAdapter {
 
@@ -293,48 +281,78 @@ public class PostsListFragment extends android.app.Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null){
-                convertView = inflater.inflate(R.layout.post_list_row,null);
+            if (convertView == null) {
+                convertView = inflater.inflate(R.layout.post_list_row, null);
             }
 
             final ImageView postPic = (ImageView) convertView.findViewById(R.id.postPic);
             TextView userName = (TextView) convertView.findViewById(R.id.userName);
             TextView likesNum = (TextView) convertView.findViewById(R.id.likesNum);
-            TextView isActive = (TextView) convertView.findViewById(R.id.isActive);
+            //TextView isActive = (TextView) convertView.findViewById(R.id.isActive);
+            TextView postDate = (TextView) convertView.findViewById(R.id.post_date);
             TextView description = (TextView) convertView.findViewById(R.id.description);
-            final ProgressBar progressBar =(ProgressBar) convertView.findViewById(R.id.progress_bar_row);
+            final ProgressBar progressBar = (ProgressBar) convertView.findViewById(R.id.progress_bar_row);
 
             final Post p = data.get(position);
             userName.setText(p.getUser());
-            likesNum.setText(p.getNumOfLikes()+"");
-            isActive.setText(Boolean.toString(p.isActive()));
+            likesNum.setText(p.getNumOfLikes() + " liked this post");
+            postDate.setText("uploaded "+DeltaTimeString(p.getDateTime()));
+            //isActive.setText(Boolean.toString(p.isActive()));
             description.setText(p.getDescription());
 
+            //postPic.setImageResource(R.drawable.default_pic);
             postPic.setTag(p.getPostPicUrl());
 
-            postPic.setImageResource(R.drawable.default_pic);
-            progressBar.setVisibility(View.VISIBLE);
-            if (p.getPostPicUrl() != null && !p.getPostPicUrl().isEmpty() && !p.getPostPicUrl().equals("")){
-                Model.instace.getImage(p.getPostPicUrl(), new Model.GetImageListener() {
-                    @Override
-                    public void onSuccess(Bitmap image) {
-                        String tagUrl = postPic.getTag().toString();
-                        if (tagUrl.equals(p.getPostPicUrl())) {
-                            postPic.setImageBitmap(image);
+            Log.d("TAG", "getView: testingggggggg " + position);
+            if (!liked) {
+                if (p.getPostPicUrl() != null && !p.getPostPicUrl().isEmpty() && !p.getPostPicUrl().equals("")) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    Log.d("TAG",position+" sync");
+                    Model.instace.getImage(p.getPostPicUrl(), new Model.GetImageListener() {
+                        @Override
+                        public void onSuccess(Bitmap image) {
+                            Log.d("TAG", "onSuccess: post uploaded");
+                            String tagUrl = postPic.getTag().toString();
+                            if (tagUrl.equals(p.getPostPicUrl())) {
+                                postPic.setImageBitmap(image);
 
+                            }
+                            progressBar.setVisibility(View.GONE);
                         }
-                        progressBar.setVisibility(View.GONE);
-                    }
 
-                    @Override
-                    public void onFail() {
-                    }
-                });
+                        @Override
+                        public void onFail() {
+                        }
+                    });
+                }
+            } else{
+                if(position == getCount()-1)
+                    liked = false;
             }
-
             return convertView;
 
         }
+        private String DeltaTimeString(Calendar cal){
+            Date now = Calendar.getInstance().getTime();
+            long diff = now.getTime() - cal.getTime().getTime();
+            if(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS) >= 365){
+                return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)%365+" years ago";
+            }
+            else if(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS) > 0){
+                return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)+" days ago";
+            }
+            else if (TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS) > 0){
+                return TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS)+" hours ago";
+            }
+            else if(TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS) > 0){
+                return TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS)+" minutes ago";
+            }
+            else{
+                return "just now";
+            }
+
+        }
+
     }
 
 
