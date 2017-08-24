@@ -25,9 +25,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -130,8 +132,7 @@ public class PostsListFragment extends android.app.Fragment {
 
                     @Override
                     public void onCancel() {
-                        data.clear();
-                        Log.d("error","blblblblblbl");
+                        //Log.d("error","blblblblblbl");
                     }
                 });
 
@@ -235,7 +236,7 @@ public class PostsListFragment extends android.app.Fragment {
                     Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
                         @Override
                         public void onComplete(List<Post> list) {
-                            Log.d("TAG", "onComplete:  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                            //Log.d("TAG", "onComplete:  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                             data.addAll(list);
                         }
 
@@ -288,12 +289,56 @@ public class PostsListFragment extends android.app.Fragment {
             final ImageView postPic = (ImageView) convertView.findViewById(R.id.postPic);
             TextView userName = (TextView) convertView.findViewById(R.id.userName);
             TextView likesNum = (TextView) convertView.findViewById(R.id.likesNum);
-            //TextView isActive = (TextView) convertView.findViewById(R.id.isActive);
             TextView postDate = (TextView) convertView.findViewById(R.id.post_date);
             TextView description = (TextView) convertView.findViewById(R.id.description);
             final ProgressBar progressBar = (ProgressBar) convertView.findViewById(R.id.progress_bar_row);
 
+            final Button optionBtn = (Button) convertView.findViewById(R.id.option_popup);
+
             final Post p = data.get(position);
+
+            if(!p.getUser().equals(currentUser.getEmail())){
+                optionBtn.setVisibility(View.GONE);
+            }
+            else{
+                optionBtn.setVisibility(View.VISIBLE);
+                optionBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //Creating the instance of PopupMenu
+                        PopupMenu popup = new PopupMenu(getActivity(), optionBtn);
+                        //Inflating the Popup using xml file
+                        popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
+
+                        //registering popup with OnMenuItemClickListener
+                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            public boolean onMenuItemClick(MenuItem item) {
+                                switch (item.getItemId()){
+                                    case R.id.edit_popup:
+                                        Bundle bundle = new Bundle();
+                                        bundle.putSerializable(EditPostFragment.POST_ARG,p);
+                                        FragmentManager fragmentManager = getFragmentManager();
+                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                        fragment = EditPostFragment.newInstance();
+                                        fragment.setArguments(bundle);
+                                        fragmentTransaction.replace(R.id.main_fragment_container, fragment);
+                                        fragmentTransaction.commit();
+                                        break;
+                                    case R.id.delete_popup:
+                                        Toast.makeText(getActivity(),"not active yet",Toast.LENGTH_SHORT).show();
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                return true;
+                            }
+                        });
+
+                        popup.show();//showing popup menu
+                    }
+                });
+            }
+
             userName.setText(p.getUser());
             likesNum.setText(p.getNumOfLikes() + " liked this post");
             postDate.setText("uploaded "+DeltaTimeString(p.getDateTime()));
@@ -303,15 +348,15 @@ public class PostsListFragment extends android.app.Fragment {
             //postPic.setImageResource(R.drawable.default_pic);
             postPic.setTag(p.getPostPicUrl());
 
-            Log.d("TAG", "getView: testingggggggg " + position);
+            //Log.d("TAG", "getView: testingggggggg " + position);
             if (!liked) {
                 if (p.getPostPicUrl() != null && !p.getPostPicUrl().isEmpty() && !p.getPostPicUrl().equals("")) {
                     progressBar.setVisibility(View.VISIBLE);
-                    Log.d("TAG",position+" sync");
+                    //Log.d("TAG",position+" sync");
                     Model.instace.getImage(p.getPostPicUrl(), new Model.GetImageListener() {
                         @Override
                         public void onSuccess(Bitmap image) {
-                            Log.d("TAG", "onSuccess: post uploaded");
+                            //Log.d("TAG", "onSuccess: post uploaded");
                             String tagUrl = postPic.getTag().toString();
                             if (tagUrl.equals(p.getPostPicUrl())) {
                                 postPic.setImageBitmap(image);

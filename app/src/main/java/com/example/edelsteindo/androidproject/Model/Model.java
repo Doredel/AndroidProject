@@ -88,14 +88,14 @@ public class Model {
 
         //1. get local lastUpdateTade
         SharedPreferences pref = MyApplication.getMyContext().getSharedPreferences("TAG", Context.MODE_PRIVATE);
-        final double lastUpdateDate = pref.getFloat("PostsLastUpdateDate",0);
+        final float lastUpdateDate = pref.getFloat("PostsLastUpdateDate",0);
         Log.d("TAG","lastUpdateDate: " + lastUpdateDate);
 
         modelFirebase.getAllPostsAndObserve(lastUpdateDate, new FirebaseModel.GetAllPostsAndObserveCallback() {
             @Override
             public void onComplete(List<Post> list)
             {
-                double newLastUpdateDate = lastUpdateDate;
+                float newLastUpdateDate = lastUpdateDate;
                 Log.d("TAG", "FB detch:" + list.size());
                 for (Post post: list) {
 
@@ -105,16 +105,16 @@ public class Model {
                         PostSql.addPost(modelSql.getWritableDatabase(),post);
                     }
                     //4. update the lastUpdateTade
-                    if(newLastUpdateDate < post.getLastUpdateDate()) {
-                        newLastUpdateDate = post.getLastUpdateDate();
+                    if(newLastUpdateDate < (float)post.getLastUpdateDate()) {
+                        newLastUpdateDate = (float)post.getLastUpdateDate();
                     }
 
                 }
                 SharedPreferences.Editor prefEd = MyApplication.getMyContext().getSharedPreferences("TAG",
                         Context.MODE_PRIVATE).edit();
-                prefEd.putFloat("PostsLastUpdateDate", (float) newLastUpdateDate);
+                prefEd.putFloat("PostsLastUpdateDate", newLastUpdateDate);
                 prefEd.commit();
-                Log.d("TAG","StudnetsLastUpdateDate: " + newLastUpdateDate);
+                Log.d("TAG","PostsLastUpdateDate: " + newLastUpdateDate);
 
 
                 //5. read from local db
@@ -169,14 +169,14 @@ public class Model {
             @Override
             public void onComplete(Bitmap bitmap) {
                 if (bitmap != null){
-                    Log.d("TAG","getImage from local success " + fileName);
+                    //Log.d("TAG","getImage from local success " + fileName);
                     listener.onSuccess(bitmap);
                 }else {
                     modelFirebase.getImage(url, new GetImageListener() {
                         @Override
                         public void onSuccess(Bitmap image) {
                             String fileName = URLUtil.guessFileName(url, null, null);
-                            Log.d("TAG","getImage from FB success " + fileName);
+                            //Log.d("TAG","getImage from FB success " + fileName);
                             saveImageToFile(image,fileName);
                             listener.onSuccess(image);
                         }
