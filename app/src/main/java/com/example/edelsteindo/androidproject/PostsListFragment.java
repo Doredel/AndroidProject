@@ -317,6 +317,7 @@ public class PostsListFragment extends android.app.Fragment {
                                     case R.id.edit_popup:
                                         Bundle bundle = new Bundle();
                                         bundle.putSerializable(EditPostFragment.POST_ARG,p);
+
                                         FragmentManager fragmentManager = getFragmentManager();
                                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                         fragment = EditPostFragment.newInstance();
@@ -325,7 +326,8 @@ public class PostsListFragment extends android.app.Fragment {
                                         fragmentTransaction.commit();
                                         break;
                                     case R.id.delete_popup:
-                                        Toast.makeText(getActivity(),"not active yet",Toast.LENGTH_SHORT).show();
+                                        Model.instace.removePost(p);
+                                        Toast.makeText(getActivity(),"post delete",Toast.LENGTH_SHORT).show();
                                         break;
                                     default:
                                         break;

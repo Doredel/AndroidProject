@@ -40,20 +40,17 @@ public class Model {
     }
 
     public void addPost(Post post) {
-        this.modelFirebase.addPost(post);
+        this.modelFirebase.updatePost(post);
         PostSql.addPost(modelSql.getWritableDatabase(),post);
-        //this.modelMem.addPost(post);
     }
 
-    public void removePost(String id) {
-        this.modelFirebase.removePost(id);
-        PostSql.removePost(modelSql.getWritableDatabase(),id);
-        //this.modelMem.removePost(id);
+    public void removePost(Post post) {
+        this.modelFirebase.removePost(post);
+        PostSql.removePost(modelSql.getWritableDatabase(),post.getId());
     }
 
     public void updatePost(Post post) {
         this.modelFirebase.updatePost(post);
-        //edit_sql
         PostSql.editPost(modelSql.getWritableDatabase(),post);
     }
 
@@ -99,14 +96,21 @@ public class Model {
                 Log.d("TAG", "FB detch:" + list.size());
                 for (Post post: list) {
 
-                    //3. update the local db
-                    boolean res = PostSql.editPost(modelSql.getWritableDatabase(), post);
-                    if(!res) {
-                        PostSql.addPost(modelSql.getWritableDatabase(),post);
+                    if(post.isActive()) {
+                        //3. update the local db
+                        boolean res = PostSql.editPost(modelSql.getWritableDatabase(), post);
+                        if (!res) {
+                            PostSql.addPost(modelSql.getWritableDatabase(), post);
+                        }
+
                     }
+                    else{
+                        PostSql.removePost(modelSql.getWritableDatabase(),post.getId());
+                    }
+
                     //4. update the lastUpdateTade
-                    if(newLastUpdateDate < (float)post.getLastUpdateDate()) {
-                        newLastUpdateDate = (float)post.getLastUpdateDate();
+                    if (newLastUpdateDate < (float) post.getLastUpdateDate()) {
+                        newLastUpdateDate = (float) post.getLastUpdateDate();
                     }
 
                 }
@@ -120,7 +124,7 @@ public class Model {
                 //5. read from local db
                 List<Post> data = PostSql.getAllPosts(modelSql.getReadableDatabase());
 
-                //6. return list of students
+                //6. return list of post
                 callback.onComplete(data);
             }
 
