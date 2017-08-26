@@ -73,7 +73,7 @@ public class FileModel {
             File imageFile = new File(dir,imageFileName);
             InputStream inputStream = new FileInputStream(imageFile);
             bitmap = BitmapFactory.decodeStream(inputStream);
-            Log.d("tag","got image from cache: " + imageFileName);
+            //Log.d("tag","got image from cache: " + imageFileName);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

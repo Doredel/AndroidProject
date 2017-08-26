@@ -2,10 +2,12 @@ package com.example.edelsteindo.androidproject.Model;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 import android.webkit.URLUtil;
 
 import com.example.edelsteindo.androidproject.MyApplication;
@@ -38,19 +40,18 @@ public class Model {
     }
 
     public void addPost(Post post) {
-        this.modelFirebase.addPost(post);
-        //PostSql.addPost(modelSql.getWritableDatabase(),post);
-        //this.modelMem.addPost(post);
+        this.modelFirebase.updatePost(post);
+        PostSql.addPost(modelSql.getWritableDatabase(),post);
     }
 
-    public void removePost(String id) {
-        this.modelFirebase.removePost(id);
-        //PostSql.removePost(modelSql.getWritableDatabase(),id);
-        //this.modelMem.removePost(id);
+    public void removePost(Post post) {
+        this.modelFirebase.removePost(post);
+        PostSql.removePost(modelSql.getWritableDatabase(),post.getId());
     }
 
     public void updatePost(Post post) {
         this.modelFirebase.updatePost(post);
+        PostSql.editPost(modelSql.getWritableDatabase(),post);
     }
 
     public interface GetPostCallback{
@@ -62,6 +63,7 @@ public class Model {
         modelFirebase.getPost(stId, new FirebaseModel.GetPostCallback() {
             @Override
             public void onComplete(Post post) {
+
                 callback.onComplete(post);
             }
 
@@ -80,10 +82,50 @@ public class Model {
     }
     public void getAllPostsAndObserve(final GetAllPostsAndObserveCallback callback){
         //return PostSql.getAllPosts(modelSql.getReadableDatabase());
-        modelFirebase.getAllPostsAndObserve(new FirebaseModel.GetAllPostsAndObserveCallback() {
+
+        //1. get local lastUpdateTade
+        SharedPreferences pref = MyApplication.getMyContext().getSharedPreferences("TAG", Context.MODE_PRIVATE);
+        final float lastUpdateDate = pref.getFloat("PostsLastUpdateDate",0);
+        Log.d("TAG","lastUpdateDate: " + lastUpdateDate);
+
+        modelFirebase.getAllPostsAndObserve(lastUpdateDate, new FirebaseModel.GetAllPostsAndObserveCallback() {
             @Override
-            public void onComplete(List<Post> list) {
-                callback.onComplete(list);
+            public void onComplete(List<Post> list)
+            {
+                float newLastUpdateDate = lastUpdateDate;
+                Log.d("TAG", "FB detch:" + list.size());
+                for (Post post: list) {
+
+                    if(post.isActive()) {
+                        //3. update the local db
+                        boolean res = PostSql.editPost(modelSql.getWritableDatabase(), post);
+                        if (!res) {
+                            PostSql.addPost(modelSql.getWritableDatabase(), post);
+                        }
+
+                    }
+                    else{
+                        PostSql.removePost(modelSql.getWritableDatabase(),post.getId());
+                    }
+
+                    //4. update the lastUpdateTade
+                    if (newLastUpdateDate < (float) post.getLastUpdateDate()) {
+                        newLastUpdateDate = (float) post.getLastUpdateDate();
+                    }
+
+                }
+                SharedPreferences.Editor prefEd = MyApplication.getMyContext().getSharedPreferences("TAG",
+                        Context.MODE_PRIVATE).edit();
+                prefEd.putFloat("PostsLastUpdateDate", newLastUpdateDate);
+                prefEd.commit();
+                Log.d("TAG","PostsLastUpdateDate: " + newLastUpdateDate);
+
+
+                //5. read from local db
+                List<Post> data = PostSql.getAllPosts(modelSql.getReadableDatabase());
+
+                //6. return list of post
+                callback.onComplete(data);
             }
 
             @Override
@@ -131,12 +173,14 @@ public class Model {
             @Override
             public void onComplete(Bitmap bitmap) {
                 if (bitmap != null){
+                    //Log.d("TAG","getImage from local success " + fileName);
                     listener.onSuccess(bitmap);
                 }else {
                     modelFirebase.getImage(url, new GetImageListener() {
                         @Override
                         public void onSuccess(Bitmap image) {
                             String fileName = URLUtil.guessFileName(url, null, null);
+                            //Log.d("TAG","getImage from FB success " + fileName);
                             saveImageToFile(image,fileName);
                             listener.onSuccess(image);
                         }
