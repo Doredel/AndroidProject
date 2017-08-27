@@ -49,7 +49,7 @@ public class EditPostFragment extends AddPostFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View contentView = super.onCreateView(inflater,container,savedInstanceState);
+        View contentView = super.onCreateView(inflater,container,savedInstanceState);
 
         description.setText(post.getDescription());
 
@@ -80,25 +80,23 @@ public class EditPostFragment extends AddPostFragment {
         if (imageBitmap != null) {
             post.setDescription(description.getText().toString());
 
-            Model.instace.saveImage(imageBitmap, post.getId() + ".jpg", new Model.SaveImageListener() {
-                @Override
-                public void complete(String url) {
-                    post.setPostPicUrl(url);
-                    Model.instace.updatePost(post);
-                }
+            if(isChanged) {
+                Model.instace.saveImage(imageBitmap, post.getId() + ".jpg", new Model.SaveImageListener() {
+                    @Override
+                    public void complete(String url) {
+                        post.setPostPicUrl(url);
+                        Model.instace.updatePost(post);
+                    }
 
-                @Override
-                public void fail() {
-                    Log.d("Fail","image error");
-                }
-            });
+                    @Override
+                    public void fail() {
+                        Log.d("Fail", "image error");
+                    }
+                });
+            }
 
 
-            FragmentManager fragmentManager = getFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragment = PostsListFragment.newInstance();
-            fragmentTransaction.replace(R.id.main_fragment_container, fragment);
-            fragmentTransaction.commit();
+            getFragmentManager().popBackStack();
 
         } else {
             Toast toast = Toast.makeText(MyApplication.getMyContext(), "Please choose your picture first", Toast.LENGTH_SHORT);

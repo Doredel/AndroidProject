@@ -36,10 +36,13 @@ public class AddPostFragment extends Fragment implements View.OnClickListener {
     private FirebaseUser currentUser ;
     private FirebaseAuth mAuth;
 
+    protected boolean isChanged = false;
+
     protected static Post post;
 
     protected ImageView imageView;
-    protected Button upload_btn ;
+    protected Button upload_btn;
+    protected Button cancel_btn;
     protected Button upload_pic;
     protected TextView description;
 
@@ -71,6 +74,7 @@ public class AddPostFragment extends Fragment implements View.OnClickListener {
         final View contentView = inflater.inflate(R.layout.fragment_add_post, container, false);
         upload_btn = (Button) contentView.findViewById(R.id.uploadBtn);
         upload_pic = (Button) contentView.findViewById(R.id.choosePicBtn);
+        cancel_btn = (Button) contentView.findViewById(R.id.cancelBtn);
         imageView = (ImageView) contentView.findViewById(R.id.chosenPic);
         description = (TextView) contentView.findViewById(R.id.newPostDescription);
         upload_pic.setOnClickListener(new View.OnClickListener() {
@@ -82,6 +86,12 @@ public class AddPostFragment extends Fragment implements View.OnClickListener {
         });
         //saving the post
         upload_btn.setOnClickListener(this);
+        cancel_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+            }
+        });
         // Inflate the layout for this fragment
         return contentView;
     }
@@ -104,13 +114,7 @@ public class AddPostFragment extends Fragment implements View.OnClickListener {
                     Log.d("Fail","image error");
                 }
             });
-
-
-            FragmentManager fragmentManager = getFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragment = PostsListFragment.newInstance();
-            fragmentTransaction.replace(R.id.main_fragment_container, fragment);
-            fragmentTransaction.commit();
+            getFragmentManager().popBackStack();
 
         } else {
             Toast toast = Toast.makeText(MyApplication.getMyContext(), "Please choose your picture first", Toast.LENGTH_SHORT);
@@ -134,9 +138,9 @@ public class AddPostFragment extends Fragment implements View.OnClickListener {
             Bundle extras = data.getExtras();
             imageBitmap = (Bitmap) extras.get("data");
             imageView.setImageBitmap(imageBitmap);
+            isChanged = true;
         }
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("tag","onActivityResult2");
     }
 
 }

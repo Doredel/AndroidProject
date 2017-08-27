@@ -121,26 +121,16 @@ public class SignUpFregment extends Fragment {
         // Inflate the layout for this fragment
         return view;
     }
-    public final static boolean isValidEmail(CharSequence target) {
-        if (target == null) {
+
+
+    public static boolean isValidEmail(CharSequence target) {
+        if(target == null) {
             return false;
         } else {
             return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
         }
     }
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-    /**
-     * Created by saportane on 31/07/2017.
-     */
 
 
 }

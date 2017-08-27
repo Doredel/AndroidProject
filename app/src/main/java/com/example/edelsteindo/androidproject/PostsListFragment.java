@@ -318,13 +318,15 @@ public class PostsListFragment extends android.app.Fragment {
                                         Bundle bundle = new Bundle();
                                         bundle.putSerializable(EditPostFragment.POST_ARG,p);
 
-                                        FragmentManager fragmentManager = getFragmentManager();
-                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                         fragment = EditPostFragment.newInstance();
                                         fragment.setArguments(bundle);
-                                        fragmentTransaction.replace(R.id.main_fragment_container, fragment);
-                                        fragmentTransaction.commit();
+
+                                        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                                        transaction.replace(R.id.main_fragment_container, fragment);
+                                        transaction.addToBackStack("List");
+                                        transaction.commit();
                                         break;
+
                                     case R.id.delete_popup:
                                         Model.instace.removePost(p);
                                         Toast.makeText(getActivity(),"post delete",Toast.LENGTH_SHORT).show();
