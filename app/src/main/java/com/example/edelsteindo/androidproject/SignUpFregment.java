@@ -35,6 +35,7 @@ public class SignUpFregment extends Fragment {
     private  EditText password;
     private  EditText confrimPassword;
     private  Button sign_up_btn;
+    private  Button cancel_btn;
     public SignUpFregment() {
         // Required empty public constructor
     }
@@ -66,7 +67,7 @@ public class SignUpFregment extends Fragment {
         password = (EditText)view.findViewById(R.id.newPassword);
         confrimPassword = (EditText)view.findViewById(R.id.newConfrimPassword);
         sign_up_btn =(Button) view.findViewById(R.id.new_user);
-
+        cancel_btn = (Button) view.findViewById(R.id.cancel_new_user);
         sign_up_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,6 +117,12 @@ public class SignUpFregment extends Fragment {
                     Toast toast = Toast.makeText(MyApplication.getMyContext(), "Please fill all of the fields", Toast.LENGTH_SHORT);
                     toast.show();
                 }
+            }
+        });
+        cancel_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
             }
         });
         // Inflate the layout for this fragment

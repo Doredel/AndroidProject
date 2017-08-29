@@ -115,6 +115,7 @@ public class AddPostFragment extends Fragment implements View.OnClickListener {
                 }
             });
             getFragmentManager().popBackStack();
+            Log.d("TAG", "onClick: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
         } else {
             Toast toast = Toast.makeText(MyApplication.getMyContext(), "Please choose your picture first", Toast.LENGTH_SHORT);

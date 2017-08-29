@@ -113,7 +113,9 @@ public class SignInFregment extends Fragment {
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragment = SignUpFregment.newInstance();
                 fragmentTransaction.replace(R.id.login_fragment_container,fragment);
+                fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
+
             }
         });
         Log.d("SignIn", "onCreateView");
