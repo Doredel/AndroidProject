@@ -130,8 +130,6 @@ public class PostsListFragment extends android.app.Fragment {
                         data.clear();
                         data.addAll(temp);
                         Collections.sort(data, new ListOrderComperator());
-                        String st =data.size()+"";
-                        Log.d("total posts",st);
                         adapter.notifyDataSetChanged();
                     }
 
@@ -235,6 +233,20 @@ public class PostsListFragment extends android.app.Fragment {
                 if (seacrh_text.getVisibility() == View.VISIBLE)
                 {
                     seacrh_text.setVisibility(View.GONE);
+                    seacrh_text.setText("");
+                    Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
+                        @Override
+                        public void onComplete(List<Post> list) {
+                            data.clear();
+                            data.addAll(list);
+                            Collections.sort(data, new ListOrderComperator());
+                        }
+
+                        @Override
+                        public void onCancel() {
+
+                        }
+                    });
                 } else
                 {
                     seacrh_text.setVisibility(View.VISIBLE);
