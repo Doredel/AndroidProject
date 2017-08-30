@@ -25,10 +25,14 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,10 +41,13 @@ import com.example.edelsteindo.androidproject.Model.Post;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -59,7 +66,9 @@ public class PostsListFragment extends android.app.Fragment {
     private EditText seacrh_text;
     private PostListAdapter adapter;
     private ProgressBar progressBar;
-    private ImageView postPic;
+
+    private boolean liked = false;
+
 
     static final int REQUEST_WRITE_STORAGE = 11;
 
@@ -67,6 +76,10 @@ public class PostsListFragment extends android.app.Fragment {
     private FirebaseAuth mAuth;
 
     private Fragment fragment;
+
+    public PostsListFragment(){
+
+    }
 
     public static PostsListFragment newInstance() {
         PostsListFragment fragment = new PostsListFragment();
@@ -79,11 +92,6 @@ public class PostsListFragment extends android.app.Fragment {
         mAuth=FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         setHasOptionsMenu(true);
-
-
-        if (getArguments() != null) {
-
-        }
     }
 
     @Override
@@ -96,9 +104,7 @@ public class PostsListFragment extends android.app.Fragment {
         progressBar=(ProgressBar)contextView.findViewById(R.id.progress_bar);
         seacrh_text.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(final CharSequence s, int start, int before, int count)
@@ -109,12 +115,8 @@ public class PostsListFragment extends android.app.Fragment {
                     public void onComplete(List<Post> list) {
                         data.clear();
                         data.addAll(list);
-                        Collections.sort(data, new Comparator<Post>() {
-                            @Override
-                            public int compare(Post post, Post t1) {
-                                return (int)(t1.getTimeMs() - post.getTimeMs());
-                            }
-                        });
+                        Collections.sort(data, new ListOrderComperator());
+
                         adapter.notifyDataSetChanged();
 
                         List<Post> temp = new LinkedList<Post>();
@@ -127,12 +129,7 @@ public class PostsListFragment extends android.app.Fragment {
                         }
                         data.clear();
                         data.addAll(temp);
-                        Collections.sort(data, new Comparator<Post>() {
-                            @Override
-                            public int compare(Post post, Post t1) {
-                                return (int)(t1.getTimeMs() - post.getTimeMs());
-                            }
-                        });
+                        Collections.sort(data, new ListOrderComperator());
                         String st =data.size()+"";
                         Log.d("total posts",st);
                         adapter.notifyDataSetChanged();
@@ -140,8 +137,6 @@ public class PostsListFragment extends android.app.Fragment {
 
                     @Override
                     public void onCancel() {
-                        data.clear();
-                        Log.d("error","blblblblblbl");
                     }
                 });
 
@@ -156,18 +151,13 @@ public class PostsListFragment extends android.app.Fragment {
 
         Log.d("f", "onCreateView: ");
         list = (ListView)contextView.findViewById(R.id.post_list);
-        //getallposts isn't implemented yet
+
         Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
             @Override
             public void onComplete(List<Post> list) {
                 data.clear();
                 data.addAll(list);
-                Collections.sort(data, new Comparator<Post>() {
-                    @Override
-                    public int compare(Post post, Post t1) {
-                        return (int)(t1.getTimeMs() - post.getTimeMs());
-                    }
-                });
+                Collections.sort(data, new ListOrderComperator());
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.GONE);
             }
@@ -197,6 +187,8 @@ public class PostsListFragment extends android.app.Fragment {
                     post.decNumOfLikes();
                     Model.instace.updatePost(post);
                 }
+                liked = true;
+                //adapter.notifyDataSetChanged();
             }
         });
 
@@ -232,10 +224,12 @@ public class PostsListFragment extends android.app.Fragment {
         {
             case R.id.addPost:
                 item.setEnabled(false);
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragment = AddPostFragment.newInstance();
+
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+
                 fragmentTransaction.replace(R.id.main_fragment_container, fragment);
+                fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             case R.id.search:
                 if (seacrh_text.getVisibility() == View.VISIBLE)
@@ -248,6 +242,7 @@ public class PostsListFragment extends android.app.Fragment {
                     Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
                         @Override
                         public void onComplete(List<Post> list) {
+                            //Log.d("TAG", "onComplete:  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                             data.addAll(list);
                         }
 
@@ -256,12 +251,7 @@ public class PostsListFragment extends android.app.Fragment {
 
                         }
                     });
-                    Collections.sort(data, new Comparator<Post>() {
-                        @Override
-                        public int compare(Post post, Post t1) {
-                            return (int)(t1.getTimeMs() - post.getTimeMs());
-                        }
-                    });
+                    Collections.sort(data, new ListOrderComperator());
                     adapter.notifyDataSetChanged();
                 }
 
@@ -270,6 +260,12 @@ public class PostsListFragment extends android.app.Fragment {
     }
 
 
+    class ListOrderComperator implements Comparator<Post>{
+        @Override
+        public int compare(Post o1, Post o2) {
+            return -1*(int)(o1.getTimeMs() - o2.getTimeMs());
+        }
+    }
 
     class PostListAdapter extends BaseAdapter {
 
@@ -292,47 +288,124 @@ public class PostsListFragment extends android.app.Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null){
-                convertView = inflater.inflate(R.layout.post_list_row,null);
+            if (convertView == null) {
+                convertView = inflater.inflate(R.layout.post_list_row, null);
             }
 
-            postPic = (ImageView) convertView.findViewById(R.id.postPic);
+            final ImageView postPic = (ImageView) convertView.findViewById(R.id.postPic);
             TextView userName = (TextView) convertView.findViewById(R.id.userName);
             TextView likesNum = (TextView) convertView.findViewById(R.id.likesNum);
-            TextView isActive = (TextView) convertView.findViewById(R.id.isActive);
+            TextView postDate = (TextView) convertView.findViewById(R.id.post_date);
             TextView description = (TextView) convertView.findViewById(R.id.description);
-            final ProgressBar progressBar =(ProgressBar) convertView.findViewById(R.id.progress_bar_row);
+            final ProgressBar progressBar = (ProgressBar) convertView.findViewById(R.id.progress_bar_row);
+
+            final ImageButton optionBtn = (ImageButton) convertView.findViewById(R.id.option_popup);
 
             final Post p = data.get(position);
-            userName.setText(p.getUser());
-            likesNum.setText(p.getNumOfLikes()+"");
-            isActive.setText(Boolean.toString(p.isActive()));
-            description.setText(p.getDescription());
 
-            postPic.setTag(p.getPostPicUrl());
-
-            postPic.setImageResource(R.drawable.default_pic);
-            progressBar.setVisibility(View.VISIBLE);
-            if (p.getPostPicUrl() != null && !p.getPostPicUrl().isEmpty() && !p.getPostPicUrl().equals("")){
-                Model.instace.getImage(p.getPostPicUrl(), new Model.GetImageListener() {
+            if(!p.getUser().equals(currentUser.getEmail())){
+                optionBtn.setVisibility(View.GONE);
+            }
+            else{
+                optionBtn.setVisibility(View.VISIBLE);
+                optionBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onSuccess(Bitmap image) {
-                        String tagUrl = postPic.getTag().toString();
-                        if (tagUrl.equals(p.getPostPicUrl())) {
-                            postPic.setImageBitmap(image);
-                            progressBar.setVisibility(View.GONE);
-                        }
-                    }
+                    public void onClick(View v) {
+                        //Creating the instance of PopupMenu
+                        PopupMenu popup = new PopupMenu(getActivity(), optionBtn);
+                        //Inflating the Popup using xml file
+                        popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
 
-                    @Override
-                    public void onFail() {
+                        //registering popup with OnMenuItemClickListener
+                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            public boolean onMenuItemClick(MenuItem item) {
+                                switch (item.getItemId()){
+                                    case R.id.edit_popup:
+                                        Bundle bundle = new Bundle();
+                                        bundle.putSerializable(EditPostFragment.POST_ARG,p);
+
+                                        fragment = EditPostFragment.newInstance();
+                                        fragment.setArguments(bundle);
+
+                                        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                                        transaction.replace(R.id.main_fragment_container, fragment);
+                                        transaction.addToBackStack("List");
+                                        transaction.commit();
+                                        break;
+
+                                    case R.id.delete_popup:
+                                        Model.instace.removePost(p);
+                                        Toast.makeText(getActivity(),"post delete",Toast.LENGTH_SHORT).show();
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                return true;
+                            }
+                        });
+
+                        popup.show();//showing popup menu
                     }
                 });
             }
 
+            userName.setText(p.getUser());
+            likesNum.setText(p.getNumOfLikes() + " liked this post");
+            postDate.setText("uploaded "+DeltaTimeString(p.getDateTime()));
+
+            description.setText(p.getDescription());
+
+            postPic.setTag(p.getPostPicUrl());
+
+            if (!liked) {
+                if (p.getPostPicUrl() != null && !p.getPostPicUrl().isEmpty() && !p.getPostPicUrl().equals("")) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    //Log.d("TAG",position+" sync");
+                    Model.instace.getImage(p.getPostPicUrl(), new Model.GetImageListener() {
+                        @Override
+                        public void onSuccess(Bitmap image) {
+
+                            String tagUrl = postPic.getTag().toString();
+                            if (tagUrl.equals(p.getPostPicUrl())) {
+                                postPic.setImageBitmap(image);
+
+                            }
+                            progressBar.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onFail() {
+                        }
+                    });
+                }
+            } else{
+                if(position == getCount()-1)
+                    liked = false;
+            }
             return convertView;
 
         }
+        private String DeltaTimeString(Calendar cal){
+            Date now = Calendar.getInstance().getTime();
+            long diff = now.getTime() - cal.getTime().getTime();
+            if(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS) >= 365){
+                return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)%365+" years ago";
+            }
+            else if(TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS) > 0){
+                return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)+" days ago";
+            }
+            else if (TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS) > 0){
+                return TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS)+" hours ago";
+            }
+            else if(TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS) > 0){
+                return TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS)+" minutes ago";
+            }
+            else{
+                return "just now";
+            }
+
+        }
+
     }
 
 

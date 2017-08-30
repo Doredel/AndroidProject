@@ -1,65 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:weightSum="7">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_weight="2"
+        android:layout_margin="10dp"
         android:weightSum="3">
-
         <TextView
             android:id="@+id/userName"
-            android:layout_width="1dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="default user name"
-            android:layout_weight="2"/>
+            android:layout_gravity="center"
+            android:textSize="20dp"
+            android:layout_weight="3"/>
+
+        <ImageButton
+            android:id="@+id/option_popup"
+            android:src="@mipmap/options"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="..."
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_weight="1"
+            android:focusable="false"/>
+
 
     </LinearLayout>
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="200dp">
+        android:id="@+id/imageLayout"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_margin="10dp">
+
         <ImageView
             android:id="@+id/postPic"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:src="@color/colorAccent"
-            android:layout_weight="3">
+            android:layout_height="match_parent"
+            android:background="#9999">
         </ImageView>
+
         <ProgressBar
             android:id="@+id/progress_bar_row"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             />
     </RelativeLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:orientation="horizontal"
-        android:layout_weight="1"
-        android:weightSum="2">
+        android:weightSum="5">
         <TextView
             android:id="@+id/likesNum"
             android:layout_width="1dp"
             android:layout_height="wrap_content"
             android:text="number of likes"
-            android:layout_weight="1"
+            android:layout_weight="2"
             />
         <TextView
-            android:id="@+id/isActive"
+            android:id="@+id/post_date"
             android:layout_width="1dp"
             android:layout_height="wrap_content"
-            android:text="is active"
-            android:layout_weight="1"/>
+            android:text="date"
+            android:layout_weight="3"/>
     </LinearLayout>
     <TextView
         android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="description"
-        android:layout_weight="1"/>
+        android:layout_margin="10dp"
+        android:text="description" />
 </LinearLayout>

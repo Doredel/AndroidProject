@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,7 +35,9 @@ public class SignUpFregment extends Fragment {
     private  EditText email;
     private  EditText password;
     private  EditText confrimPassword;
+    private ProgressBar progressBar;
     private  Button sign_up_btn;
+    private  Button cancel_btn;
     public SignUpFregment() {
         // Required empty public constructor
     }
@@ -62,11 +65,13 @@ public class SignUpFregment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view =inflater.inflate(R.layout.fragment_sign_up_fregment, container, false);
+        progressBar = (ProgressBar) view.findViewById(R.id.progress_bar_signUp);
+        progressBar.setVisibility(View.GONE);
         email =(EditText)view.findViewById(R.id.newUserName);
         password = (EditText)view.findViewById(R.id.newPassword);
         confrimPassword = (EditText)view.findViewById(R.id.newConfrimPassword);
         sign_up_btn =(Button) view.findViewById(R.id.new_user);
-
+        cancel_btn = (Button) view.findViewById(R.id.cancel_new_user);
         sign_up_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,6 +84,7 @@ public class SignUpFregment extends Fragment {
                         //Check if the email is valid
                         if(isValidEmail(email.getText()))
                         {
+                            progressBar.setVisibility(View.VISIBLE);
                             mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                                     .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                                         @Override
@@ -86,12 +92,13 @@ public class SignUpFregment extends Fragment {
                                             if (task.isSuccessful()) {
                                                 // Sign in success, update UI with the signed-in user's information
                                                 Log.d("tag", "createUserWithEmail:success");
-
+                                                progressBar.setVisibility(View.GONE);
                                                 //open the post list activity
                                                 Intent intent = new Intent(getActivity(),MainActivity.class);
                                                 startActivity(intent);
                                             } else {
                                                 // If sign in fails, display a message to the user.
+                                                progressBar.setVisibility(View.GONE);
                                                 Toast.makeText(getActivity(), "Authentication failed." + task.getException().getMessage(),
                                                         Toast.LENGTH_SHORT).show();
                                                 //updateUI(null);
@@ -118,29 +125,25 @@ public class SignUpFregment extends Fragment {
                 }
             }
         });
+        cancel_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+            }
+        });
         // Inflate the layout for this fragment
         return view;
     }
-    public final static boolean isValidEmail(CharSequence target) {
-        if (target == null) {
+
+
+    public static boolean isValidEmail(CharSequence target) {
+        if(target == null) {
             return false;
         } else {
             return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
         }
     }
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-    /**
-     * Created by saportane on 31/07/2017.
-     */
 
 
 }

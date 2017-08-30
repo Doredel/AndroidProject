@@ -1,5 +1,6 @@
 package com.example.edelsteindo.androidproject.Model;
 
+import java.io.Serializable;
 import java.security.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,7 +13,7 @@ import java.util.Random;
  * Created by saportane on 27/06/2017.
  */
 
-public class Post {
+public class Post implements Serializable {
     private String id;
     private String postPicUrl;
     private int numOfLikes;
@@ -28,6 +29,7 @@ public class Post {
         genRandomId();
         this.likedUsers = new LinkedList<String>();
         this.setTimeMs(GregorianCalendar.getInstance().getTimeInMillis());
+
     }
 
     public Post(Post post) {
@@ -158,4 +160,6 @@ public class Post {
         Random rand = new Random();
         this.setId((new Integer(rand.nextInt(Integer.MAX_VALUE))).toString());
     }
+
+
 }

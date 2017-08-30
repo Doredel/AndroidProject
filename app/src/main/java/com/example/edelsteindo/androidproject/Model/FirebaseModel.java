@@ -29,7 +29,10 @@ import java.util.Map;
 
 public class FirebaseModel {
 
-    private Map<String, Object> createValues(Post post){
+    public void updatePost(Post post){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("posts");
+
         Map<String, Object> value = new HashMap<>();
         value.put("id", post.getId());
         value.put("postPicUrl", post.getPostPicUrl());
@@ -41,26 +44,12 @@ public class FirebaseModel {
         value.put("likedUsers",post.getLikedUsers());
         value.put("timeMs", post.getTimeMs());
 
-        return value;
+        myRef.child(post.getId()).setValue(value);
     }
 
-    public void addPost(Post post){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("posts");
-        myRef.child(post.getId()).setValue(createValues(post));
-
-    }
-
-    public void removePost(String id){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("posts");
-        myRef.child(id).removeValue();
-    }
-
-    public void updatePost(Post post){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("posts");
-        myRef.child(post.getId()).setValue(createValues(post));
+    public void removePost(Post post){
+        post.setActive(false);
+        this.updatePost(post);
     }
 
     interface GetPostCallback {
@@ -93,7 +82,7 @@ public class FirebaseModel {
     public void getAllPostsAndObserve(final GetAllPostsAndObserveCallback callback) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("posts");
-        myRef.addValueEventListener(new ValueEventListener() {
+        ValueEventListener listener = myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Post> list = new LinkedList<Post>();
@@ -111,6 +100,32 @@ public class FirebaseModel {
         });
     }
 
+    public void getAllPostsAndObserve(final double lastUpdateDate, final GetAllPostsAndObserveCallback callback) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("posts");
+
+        final double nextUpdateDate = Math.nextAfter(lastUpdateDate,Double.POSITIVE_INFINITY);
+
+        myRef.orderByChild("lastUpdateDate").startAt(nextUpdateDate)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        List<Post> list = new LinkedList<Post>();
+                        for (DataSnapshot snap : dataSnapshot.getChildren()) {
+                            Post post = snap.getValue(Post.class);
+                            list.add(post);
+                        }
+
+                        callback.onComplete(list);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
     //-------------------------------------------------------------------------------------
 
     public void saveImage(Bitmap imageBmp, String name, final Model.SaveImageListener listener){
@@ -124,12 +139,14 @@ public class FirebaseModel {
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(Exception exception) {
+                Log.d("TAG","shit");
                 listener.fail();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                Log.d("TAG",downloadUrl.toString());
                 listener.complete(downloadUrl.toString());
             }
         });
