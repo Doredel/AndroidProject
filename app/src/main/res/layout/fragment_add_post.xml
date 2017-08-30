@@ -28,31 +28,34 @@
                 android:layout_gravity="bottom|center_horizontal"/>
         </LinearLayout>
 
-        <!--android:text="Choose your picture"
-        android:layout_margin="20dp"-->
-
 
         <EditText
             android:id="@+id/newPostDescription"
             android:layout_width="match_parent"
             android:layout_height="190dp"
-            android:layout_gravity="center"
             android:hint="your description ... "/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="20dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="center|bottom"
-        android:orientation="vertical" >
+        android:gravity="center"
+        android:orientation="horizontal" >
 
 
         <Button
+            android:layout_margin="10dp"
             android:id="@+id/uploadBtn"
             android:layout_width="145dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center"
             android:text="Upload post" />
+
+        <Button
+            android:layout_margin="10dp"
+            android:id="@+id/cancelBtn"
+            android:layout_width="145dp"
+            android:layout_height="wrap_content"
+            android:text="Cancel" />
     </LinearLayout>
 
 

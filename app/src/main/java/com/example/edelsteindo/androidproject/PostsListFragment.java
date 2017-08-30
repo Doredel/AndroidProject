@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
@@ -75,6 +76,10 @@ public class PostsListFragment extends android.app.Fragment {
     private FirebaseAuth mAuth;
 
     private Fragment fragment;
+
+    public PostsListFragment(){
+
+    }
 
     public static PostsListFragment newInstance() {
         PostsListFragment fragment = new PostsListFragment();
@@ -132,7 +137,6 @@ public class PostsListFragment extends android.app.Fragment {
 
                     @Override
                     public void onCancel() {
-                        //Log.d("error","blblblblblbl");
                     }
                 });
 
@@ -220,10 +224,12 @@ public class PostsListFragment extends android.app.Fragment {
         {
             case R.id.addPost:
                 item.setEnabled(false);
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragment = AddPostFragment.newInstance();
+
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+
                 fragmentTransaction.replace(R.id.main_fragment_container, fragment);
+                fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             case R.id.search:
                 if (seacrh_text.getVisibility() == View.VISIBLE)
@@ -293,7 +299,7 @@ public class PostsListFragment extends android.app.Fragment {
             TextView description = (TextView) convertView.findViewById(R.id.description);
             final ProgressBar progressBar = (ProgressBar) convertView.findViewById(R.id.progress_bar_row);
 
-            final Button optionBtn = (Button) convertView.findViewById(R.id.option_popup);
+            final ImageButton optionBtn = (ImageButton) convertView.findViewById(R.id.option_popup);
 
             final Post p = data.get(position);
 
@@ -318,13 +324,15 @@ public class PostsListFragment extends android.app.Fragment {
                                         Bundle bundle = new Bundle();
                                         bundle.putSerializable(EditPostFragment.POST_ARG,p);
 
-                                        FragmentManager fragmentManager = getFragmentManager();
-                                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                                         fragment = EditPostFragment.newInstance();
                                         fragment.setArguments(bundle);
-                                        fragmentTransaction.replace(R.id.main_fragment_container, fragment);
-                                        fragmentTransaction.commit();
+
+                                        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                                        transaction.replace(R.id.main_fragment_container, fragment);
+                                        transaction.addToBackStack("List");
+                                        transaction.commit();
                                         break;
+
                                     case R.id.delete_popup:
                                         Model.instace.removePost(p);
                                         Toast.makeText(getActivity(),"post delete",Toast.LENGTH_SHORT).show();
@@ -344,13 +352,11 @@ public class PostsListFragment extends android.app.Fragment {
             userName.setText(p.getUser());
             likesNum.setText(p.getNumOfLikes() + " liked this post");
             postDate.setText("uploaded "+DeltaTimeString(p.getDateTime()));
-            //isActive.setText(Boolean.toString(p.isActive()));
+
             description.setText(p.getDescription());
 
-            //postPic.setImageResource(R.drawable.default_pic);
             postPic.setTag(p.getPostPicUrl());
 
-            //Log.d("TAG", "getView: testingggggggg " + position);
             if (!liked) {
                 if (p.getPostPicUrl() != null && !p.getPostPicUrl().isEmpty() && !p.getPostPicUrl().equals("")) {
                     progressBar.setVisibility(View.VISIBLE);
@@ -358,7 +364,7 @@ public class PostsListFragment extends android.app.Fragment {
                     Model.instace.getImage(p.getPostPicUrl(), new Model.GetImageListener() {
                         @Override
                         public void onSuccess(Bitmap image) {
-                            //Log.d("TAG", "onSuccess: post uploaded");
+
                             String tagUrl = postPic.getTag().toString();
                             if (tagUrl.equals(p.getPostPicUrl())) {
                                 postPic.setImageBitmap(image);

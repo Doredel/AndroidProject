@@ -19,8 +19,9 @@
             android:textSize="20dp"
             android:layout_weight="3"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/option_popup"
+            android:src="@mipmap/options"
             android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
