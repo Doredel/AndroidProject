@@ -7,12 +7,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 import android.webkit.URLUtil;
 
 import com.example.edelsteindo.androidproject.MyApplication;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -84,14 +82,12 @@ public class Model {
         //1. get local lastUpdateTade
         SharedPreferences pref = MyApplication.getMyContext().getSharedPreferences("TAG", Context.MODE_PRIVATE);
         final float lastUpdateDate = pref.getFloat("PostsLastUpdateDate",0);
-        Log.d("TAG","lastUpdateDate: " + lastUpdateDate);
 
         modelFirebase.getAllPostsAndObserve(lastUpdateDate, new FirebaseModel.GetAllPostsAndObserveCallback() {
             @Override
             public void onComplete(List<Post> list)
             {
                 float newLastUpdateDate = lastUpdateDate;
-                Log.d("TAG", "FB detch:" + list.size());
                 for (Post post: list) {
 
                     if(post.isActive()) {
@@ -116,7 +112,6 @@ public class Model {
                         Context.MODE_PRIVATE).edit();
                 prefEd.putFloat("PostsLastUpdateDate", newLastUpdateDate);
                 prefEd.commit();
-                Log.d("TAG","PostsLastUpdateDate: " + newLastUpdateDate);
 
 
                 //5. read from local db
@@ -171,14 +166,12 @@ public class Model {
             @Override
             public void onComplete(Bitmap bitmap) {
                 if (bitmap != null){
-                    //Log.d("TAG","getImage from local success " + fileName);
                     listener.onSuccess(bitmap);
                 }else {
                     modelFirebase.getImage(url, new GetImageListener() {
                         @Override
                         public void onSuccess(Bitmap image) {
                             String fileName = URLUtil.guessFileName(url, null, null);
-                            //Log.d("TAG","getImage from FB success " + fileName);
                             saveImageToFile(image,fileName);
                             listener.onSuccess(image);
                         }

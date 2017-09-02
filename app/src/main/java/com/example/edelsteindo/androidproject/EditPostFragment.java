@@ -1,23 +1,16 @@
 package com.example.edelsteindo.androidproject;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.edelsteindo.androidproject.Model.Model;
 import com.example.edelsteindo.androidproject.Model.Post;
 
-import java.net.URI;
 
 /**
  * Created by Dor-New on 24/08/2017.
@@ -29,7 +22,7 @@ public class EditPostFragment extends AddPostFragment {
 
     public static EditPostFragment newInstance() {
         EditPostFragment fragment = new EditPostFragment();
-
+        //getting the details of the post
         Bundle args = new Bundle();
         args.putSerializable(POST_ARG, post);
         fragment.setArguments(args);
@@ -76,8 +69,7 @@ public class EditPostFragment extends AddPostFragment {
 
     @Override
     public void onClick(View v) {
-
-        Log.d("TAG", "onClick: discription");
+        //saving the changes
         if (imageBitmap != null) {
             post.setDescription(description.getText().toString());
 
@@ -91,7 +83,7 @@ public class EditPostFragment extends AddPostFragment {
 
                     @Override
                     public void fail() {
-                        Log.d("Fail", "image error");
+
                     }
                 });
             }

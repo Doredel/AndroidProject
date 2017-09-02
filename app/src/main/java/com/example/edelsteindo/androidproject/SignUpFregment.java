@@ -1,15 +1,11 @@
 package com.example.edelsteindo.androidproject;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -19,7 +15,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 
 /**
@@ -48,7 +43,6 @@ public class SignUpFregment extends Fragment {
      *
      * @return A new instance of fragment SignUpFregment.
      */
-    // TODO: Rename and change types and number of parameters
     public static SignUpFregment newInstance() {
         SignUpFregment fragment = new SignUpFregment();
         return fragment;
@@ -93,7 +87,6 @@ public class SignUpFregment extends Fragment {
 
                                             if (task.isSuccessful()) {
                                                 // Sign in success, update UI with the signed-in user's information
-                                                Log.d("tag", "createUserWithEmail:success");
                                                 progressBar.setVisibility(View.GONE);
                                                 sign_up_btn.setEnabled(true);
                                                 //open the post list activity

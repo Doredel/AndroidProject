@@ -4,8 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,7 +14,6 @@ import java.util.List;
 
 public class UserPostSql {
     private static final String USER_POST_TABLE = "user_post";
-
     private static final String USER_POST_ID = "id";
     private static final String USER_POST_POST_ID = "post_id";
     private static final String USER_POST_USER_EMAIL = "user_email";

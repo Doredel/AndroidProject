@@ -1,9 +1,9 @@
 package com.example.edelsteindo.androidproject.Model;
 
 import java.io.Serializable;
-import java.security.Timestamp;
+
 import java.util.Calendar;
-import java.util.Date;
+
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;

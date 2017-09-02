@@ -4,8 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -120,7 +119,6 @@ public class PostSql {
         return pst;
     }
 
-    //todo boom boom edit
     static boolean editPost(SQLiteDatabase db, Post pst) {
         ContentValues values = new ContentValues();
 

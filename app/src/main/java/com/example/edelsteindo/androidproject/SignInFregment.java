@@ -4,10 +4,8 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +28,6 @@ import com.google.firebase.auth.FirebaseAuth;
  * create an instance of this fragment.
  */
 public class SignInFregment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private Fragment fragment;
     private EditText password;
@@ -47,7 +44,6 @@ public class SignInFregment extends Fragment {
      *
      * @return A new instance of fragment SignInFregment.
      */
-    // TODO: Rename and change types and number of parameters
     public static SignInFregment newInstance() {
         SignInFregment fragment = new SignInFregment();
         return fragment;
@@ -57,7 +53,6 @@ public class SignInFregment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         mAuth =FirebaseAuth.getInstance();
         super.onCreate(savedInstanceState);
-        Log.d("SignIn", "onCreate");
     }
 
     @Override
@@ -91,14 +86,13 @@ public class SignInFregment extends Fragment {
                     progressBar.setVisibility(View.VISIBLE);
                     sign_in_btn.setEnabled(false);
                     sign_up_btn.setEnabled(false);
-
+                    //firebase authentication
                     mAuth.signInWithEmailAndPassword(userName.getText().toString(), password.getText().toString())
                             .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
                                         // Sign in success, update UI with the signed-in user's information
-                                        Log.d("TAG", "signInWithEmail:success");
                                         progressBar.setVisibility(View.GONE);
                                         sign_in_btn.setEnabled(true);
                                         sign_up_btn.setEnabled(true);
@@ -106,7 +100,6 @@ public class SignInFregment extends Fragment {
                                         startActivity(intent);
                                     } else {
                                         // If sign in fails, display a message to the user.
-                                        Log.w("TAG","signInWithEmail:failure", task.getException());
                                         progressBar.setVisibility(View.GONE);
                                         sign_in_btn.setEnabled(true);
                                         sign_up_btn.setEnabled(true);
@@ -114,7 +107,6 @@ public class SignInFregment extends Fragment {
                                                 Toast.LENGTH_SHORT).show();
                                     }
 
-                                    // ...
                                 }
                             });
                 }
@@ -132,7 +124,7 @@ public class SignInFregment extends Fragment {
             @Override
             public void onClick(View v)
             {
-
+                //opening sign up fragment
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragment = SignUpFregment.newInstance();
@@ -142,7 +134,6 @@ public class SignInFregment extends Fragment {
 
             }
         });
-        Log.d("SignIn", "onCreateView");
         return contentView;
     }
 

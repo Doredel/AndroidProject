@@ -1,7 +1,6 @@
 package com.example.edelsteindo.androidproject;
 
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -12,24 +11,20 @@ import android.support.v4.content.ContextCompat;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -99,6 +94,7 @@ public class PostsListFragment extends android.app.Fragment {
         seacrh_text = (EditText)contextView.findViewById(R.id.search_text);
         seacrh_text.setVisibility(View.GONE);
         progressBar=(ProgressBar)contextView.findViewById(R.id.progress_bar);
+        //for searching by userName
         seacrh_text.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -123,6 +119,7 @@ public class PostsListFragment extends android.app.Fragment {
                         }
                         data.clear();
                         data.addAll(temp);
+                        //ordering by uploading date
                         Collections.sort(data, new ListOrderComperator());
                         adapter.notifyDataSetChanged();
                     }
@@ -141,7 +138,6 @@ public class PostsListFragment extends android.app.Fragment {
             }
         });
 
-        Log.d("f", "onCreateView: ");
         list = (ListView)contextView.findViewById(R.id.post_list);
 
         Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
@@ -149,6 +145,7 @@ public class PostsListFragment extends android.app.Fragment {
             public void onComplete(List<Post> list) {
                 data.clear();
                 data.addAll(list);
+                //ordering by uploading date
                 Collections.sort(data, new ListOrderComperator());
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.GONE);
@@ -162,23 +159,18 @@ public class PostsListFragment extends android.app.Fragment {
         adapter = new PostListAdapter();
         list.setAdapter(adapter);
 
-
+        //functionality of likes
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Post post = data.get(position);
                 String username = currentUser.getEmail();
-
-                Log.d("TAG", "onItemClick: like");
-
                 if(!post.getLikedUsers().contains(username)){
-                    Log.d("TAG", "onItemClick: like ok ");
                     post.addLikedUser(username);
                     post.incNumOfLikes();
                     Model.instace.updatePost(post);
                 }
                 else{
-                    Log.d("TAG", "onItemClick: like ok");
                     post.removeLikedUser(username);
                     post.decNumOfLikes();
                     Model.instace.updatePost(post);
@@ -187,7 +179,7 @@ public class PostsListFragment extends android.app.Fragment {
                 adapter.notifyDataSetChanged();
             }
         });
-
+        // asking permission to write to external storage
         boolean hasPermission = (ContextCompat.checkSelfPermission(getActivity(),
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED);
@@ -219,8 +211,8 @@ public class PostsListFragment extends android.app.Fragment {
         switch (item.getItemId())
         {
             case R.id.addPost:
-                Log.d("TAG", "onOptionsItemSelected: add");
                 item.setEnabled(false);
+                //opening add post fragment
                 fragment = AddPostFragment.newInstance();
 
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
@@ -240,6 +232,7 @@ public class PostsListFragment extends android.app.Fragment {
                         public void onComplete(List<Post> list) {
                             data.clear();
                             data.addAll(list);
+                            //sorting by uploaded date
                             Collections.sort(data, new ListOrderComperator());
                         }
 
@@ -263,13 +256,13 @@ public class PostsListFragment extends android.app.Fragment {
 
                         }
                     });
+                    //sorting by uploaded date
                     Collections.sort(data, new ListOrderComperator());
                     adapter.notifyDataSetChanged();
                 }
                 return true;
 
             case R.id.log_out:
-                Log.d("TAG", "onOptionsItemSelected: log out");
                 mAuth.signOut();
                 getActivity().finish();
                 return true;
@@ -279,14 +272,14 @@ public class PostsListFragment extends android.app.Fragment {
         }
     }
 
-
+    //comperator that compares between two posts
     class ListOrderComperator implements Comparator<Post>{
         @Override
         public int compare(Post o1, Post o2) {
             return -1*(int)(o1.getTimeMs() - o2.getTimeMs());
         }
     }
-
+    // the adapter of the main post list
     class PostListAdapter extends BaseAdapter {
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -344,7 +337,7 @@ public class PostsListFragment extends android.app.Fragment {
                                     case R.id.edit_popup:
                                         Bundle bundle = new Bundle();
                                         bundle.putSerializable(EditPostFragment.POST_ARG,p);
-
+                                        //opening edit post fragment
                                         fragment = EditPostFragment.newInstance();
                                         fragment.setArguments(bundle);
 
@@ -381,7 +374,6 @@ public class PostsListFragment extends android.app.Fragment {
             if (!liked) {
                 if (p.getPostPicUrl() != null && !p.getPostPicUrl().isEmpty() && !p.getPostPicUrl().equals("")) {
                     progressBar.setVisibility(View.VISIBLE);
-                    //Log.d("TAG",position+" sync");
                     Model.instace.getImage(p.getPostPicUrl(), new Model.GetImageListener() {
                         @Override
                         public void onSuccess(Bitmap image) {

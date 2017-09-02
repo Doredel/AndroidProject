@@ -1,19 +1,13 @@
 package com.example.edelsteindo.androidproject;
 
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Context;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -28,13 +22,14 @@ import com.google.firebase.auth.FirebaseUser;
 
 
 public class AddPostFragment extends Fragment implements View.OnClickListener {
-    protected Fragment fragment;
+
 
     protected Bitmap imageBitmap;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private FirebaseUser currentUser ;
     private FirebaseAuth mAuth;
+
 
     protected boolean isChanged = false;
 
@@ -80,7 +75,6 @@ public class AddPostFragment extends Fragment implements View.OnClickListener {
         upload_pic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("tag","upload_pic OnClickListener");
                 dispatchTakePictureIntent();
             }
         });
@@ -111,11 +105,10 @@ public class AddPostFragment extends Fragment implements View.OnClickListener {
 
                 @Override
                 public void fail() {
-                    Log.d("Fail","image error");
+
                 }
             });
             getFragmentManager().popBackStack();
-            Log.d("TAG", "onClick: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
         } else {
             Toast toast = Toast.makeText(MyApplication.getMyContext(), "Please choose your picture first", Toast.LENGTH_SHORT);
@@ -123,9 +116,8 @@ public class AddPostFragment extends Fragment implements View.OnClickListener {
         }
 
     }
-
+    //for taking pictures
     protected void dispatchTakePictureIntent() {
-        Log.d("tag","dispatchTakePictureIntent");
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
@@ -134,7 +126,6 @@ public class AddPostFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("tag","onActivityResult");
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK ) {
             Bundle extras = data.getExtras();
             imageBitmap = (Bitmap) extras.get("data");
