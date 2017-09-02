@@ -85,23 +85,27 @@ public class SignUpFregment extends Fragment {
                         if(isValidEmail(email.getText()))
                         {
                             progressBar.setVisibility(View.VISIBLE);
+                            sign_up_btn.setEnabled(false);
                             mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                                     .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                                         @Override
                                         public void onComplete(Task<AuthResult> task) {
+
                                             if (task.isSuccessful()) {
                                                 // Sign in success, update UI with the signed-in user's information
                                                 Log.d("tag", "createUserWithEmail:success");
                                                 progressBar.setVisibility(View.GONE);
+                                                sign_up_btn.setEnabled(true);
                                                 //open the post list activity
                                                 Intent intent = new Intent(getActivity(),MainActivity.class);
                                                 startActivity(intent);
+
                                             } else {
                                                 // If sign in fails, display a message to the user.
                                                 progressBar.setVisibility(View.GONE);
+                                                sign_up_btn.setEnabled(true);
                                                 Toast.makeText(getActivity(), "Authentication failed." + task.getException().getMessage(),
                                                         Toast.LENGTH_SHORT).show();
-                                                //updateUI(null);
                                             }
                                         }
                                     });
@@ -128,6 +132,7 @@ public class SignUpFregment extends Fragment {
         cancel_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 getFragmentManager().popBackStack();
             }
         });

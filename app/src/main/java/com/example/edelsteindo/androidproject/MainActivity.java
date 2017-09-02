@@ -6,17 +6,25 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class MainActivity extends Activity {
   
     private Fragment fragment;
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mAuth = FirebaseAuth.getInstance();
+
         if (savedInstanceState == null) {
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -27,17 +35,12 @@ public class MainActivity extends Activity {
             fragment = getFragmentManager().findFragmentById(R.id.post_list);
         }
     }
-    public void onMenuGroupItemClicked(MenuItem menuItem)
-    {
-        if(menuItem.getItemId()==R.id.log_out)
-        {
-            Intent i = new Intent(this, LoginActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(i);
-        }
+
+    @Override
+    protected void onDestroy() {
+        mAuth.signOut();
+        Log.d("TAG", "onDestroy: ");
+        super.onDestroy();
     }
-
-
-
 }
 

@@ -61,6 +61,13 @@ public class SignInFregment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        userName.setText("");
+        password.setText("");
+        super.onResume();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -69,8 +76,11 @@ public class SignInFregment extends Fragment {
         progressBar.setVisibility(View.GONE);
         password = (EditText) contentView.findViewById(R.id.signInPass);
         userName = (EditText) contentView.findViewById(R.id.signInUserName);
+
+
+        final Button sign_up_btn = (Button)contentView.findViewById(R.id.signUpBtn);
         //setting the buttons events
-        Button sign_in_btn = (Button)contentView.findViewById(R.id.signInBtn);
+        final Button sign_in_btn = (Button)contentView.findViewById(R.id.signInBtn);
         sign_in_btn.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -79,6 +89,9 @@ public class SignInFregment extends Fragment {
                 if(!(password.getText().toString().matches("")||userName.getText().toString().matches("")))
                 {
                     progressBar.setVisibility(View.VISIBLE);
+                    sign_in_btn.setEnabled(false);
+                    sign_up_btn.setEnabled(false);
+
                     mAuth.signInWithEmailAndPassword(userName.getText().toString(), password.getText().toString())
                             .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                                 @Override
@@ -87,12 +100,16 @@ public class SignInFregment extends Fragment {
                                         // Sign in success, update UI with the signed-in user's information
                                         Log.d("TAG", "signInWithEmail:success");
                                         progressBar.setVisibility(View.GONE);
+                                        sign_in_btn.setEnabled(true);
+                                        sign_up_btn.setEnabled(true);
                                         Intent intent = new Intent(getActivity(),MainActivity.class);
                                         startActivity(intent);
                                     } else {
                                         // If sign in fails, display a message to the user.
                                         Log.w("TAG","signInWithEmail:failure", task.getException());
                                         progressBar.setVisibility(View.GONE);
+                                        sign_in_btn.setEnabled(true);
+                                        sign_up_btn.setEnabled(true);
                                         Toast.makeText(getActivity(), task.getException().getMessage(),
                                                 Toast.LENGTH_SHORT).show();
                                     }
@@ -109,7 +126,7 @@ public class SignInFregment extends Fragment {
             }
         });
         
-        Button sign_up_btn = (Button)contentView.findViewById(R.id.signUpBtn);
+
         sign_up_btn.setOnClickListener(new View.OnClickListener()
         {
             @Override

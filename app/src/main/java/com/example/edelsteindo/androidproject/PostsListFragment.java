@@ -1,12 +1,9 @@
 package com.example.edelsteindo.androidproject;
 
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 
@@ -115,9 +112,6 @@ public class PostsListFragment extends android.app.Fragment {
                     public void onComplete(List<Post> list) {
                         data.clear();
                         data.addAll(list);
-                        Collections.sort(data, new ListOrderComperator());
-
-                        adapter.notifyDataSetChanged();
 
                         List<Post> temp = new LinkedList<Post>();
 
@@ -175,18 +169,22 @@ public class PostsListFragment extends android.app.Fragment {
                 Post post = data.get(position);
                 String username = currentUser.getEmail();
 
+                Log.d("TAG", "onItemClick: like");
+
                 if(!post.getLikedUsers().contains(username)){
+                    Log.d("TAG", "onItemClick: like ok ");
                     post.addLikedUser(username);
                     post.incNumOfLikes();
                     Model.instace.updatePost(post);
                 }
                 else{
+                    Log.d("TAG", "onItemClick: like ok");
                     post.removeLikedUser(username);
                     post.decNumOfLikes();
                     Model.instace.updatePost(post);
                 }
                 liked = true;
-                //adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
             }
         });
 
@@ -221,6 +219,7 @@ public class PostsListFragment extends android.app.Fragment {
         switch (item.getItemId())
         {
             case R.id.addPost:
+                Log.d("TAG", "onOptionsItemSelected: add");
                 item.setEnabled(false);
                 fragment = AddPostFragment.newInstance();
 
@@ -229,6 +228,8 @@ public class PostsListFragment extends android.app.Fragment {
                 fragmentTransaction.replace(R.id.main_fragment_container, fragment);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
+                return true;
+
             case R.id.search:
                 if (seacrh_text.getVisibility() == View.VISIBLE)
                 {
@@ -254,7 +255,6 @@ public class PostsListFragment extends android.app.Fragment {
                     Model.instace.getAllPostsAndObserve(new Model.GetAllPostsAndObserveCallback() {
                         @Override
                         public void onComplete(List<Post> list) {
-                            //Log.d("TAG", "onComplete:  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                             data.addAll(list);
                         }
 
@@ -266,9 +266,17 @@ public class PostsListFragment extends android.app.Fragment {
                     Collections.sort(data, new ListOrderComperator());
                     adapter.notifyDataSetChanged();
                 }
+                return true;
 
+            case R.id.log_out:
+                Log.d("TAG", "onOptionsItemSelected: log out");
+                mAuth.signOut();
+                getActivity().finish();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
 
@@ -317,6 +325,7 @@ public class PostsListFragment extends android.app.Fragment {
 
             if(!p.getUser().equals(currentUser.getEmail())){
                 optionBtn.setVisibility(View.GONE);
+
             }
             else{
                 optionBtn.setVisibility(View.VISIBLE);

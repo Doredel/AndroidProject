@@ -81,8 +81,6 @@ public class Model {
         void onCancel();
     }
     public void getAllPostsAndObserve(final GetAllPostsAndObserveCallback callback){
-        //return PostSql.getAllPosts(modelSql.getReadableDatabase());
-
         //1. get local lastUpdateTade
         SharedPreferences pref = MyApplication.getMyContext().getSharedPreferences("TAG", Context.MODE_PRIVATE);
         final float lastUpdateDate = pref.getFloat("PostsLastUpdateDate",0);

@@ -77,6 +77,7 @@ public class EditPostFragment extends AddPostFragment {
     @Override
     public void onClick(View v) {
 
+        Log.d("TAG", "onClick: discription");
         if (imageBitmap != null) {
             post.setDescription(description.getText().toString());
 
@@ -93,6 +94,9 @@ public class EditPostFragment extends AddPostFragment {
                         Log.d("Fail", "image error");
                     }
                 });
+            }
+            else{
+                Model.instace.updatePost(post);
             }
 
 
