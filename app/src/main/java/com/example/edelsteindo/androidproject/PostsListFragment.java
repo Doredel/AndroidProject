@@ -59,9 +59,6 @@ public class PostsListFragment extends android.app.Fragment {
     private PostListAdapter adapter;
     private ProgressBar progressBar;
 
-    private boolean liked = false;
-
-
     static final int REQUEST_WRITE_STORAGE = 11;
 
     private FirebaseUser currentUser ;
@@ -175,8 +172,6 @@ public class PostsListFragment extends android.app.Fragment {
                     post.decNumOfLikes();
                     Model.instace.updatePost(post);
                 }
-                liked = true;
-                adapter.notifyDataSetChanged();
             }
         });
         // asking permission to write to external storage
@@ -371,30 +366,28 @@ public class PostsListFragment extends android.app.Fragment {
 
             postPic.setTag(p.getPostPicUrl());
 
-            if (!liked) {
-                if (p.getPostPicUrl() != null && !p.getPostPicUrl().isEmpty() && !p.getPostPicUrl().equals("")) {
-                    progressBar.setVisibility(View.VISIBLE);
-                    Model.instace.getImage(p.getPostPicUrl(), new Model.GetImageListener() {
-                        @Override
-                        public void onSuccess(Bitmap image) {
+            postPic.setImageDrawable(null);
 
-                            String tagUrl = postPic.getTag().toString();
-                            if (tagUrl.equals(p.getPostPicUrl())) {
-                                postPic.setImageBitmap(image);
+            if (p.getPostPicUrl() != null && !p.getPostPicUrl().isEmpty() && !p.getPostPicUrl().equals("")) {
+                progressBar.setVisibility(View.VISIBLE);
+                Model.instace.getImage(p.getPostPicUrl(), new Model.GetImageListener() {
+                    @Override
+                    public void onSuccess(Bitmap image) {
 
-                            }
-                            progressBar.setVisibility(View.GONE);
+                        String tagUrl = postPic.getTag().toString();
+                        if (tagUrl.equals(p.getPostPicUrl())) {
+                            postPic.setImageBitmap(image);
+
                         }
+                        progressBar.setVisibility(View.GONE);
+                    }
 
-                        @Override
-                        public void onFail() {
-                        }
-                    });
-                }
-            } else{
-                if(position == getCount()-1)
-                    liked = false;
+                    @Override
+                    public void onFail() {
+                    }
+                });
             }
+
             return convertView;
 
         }

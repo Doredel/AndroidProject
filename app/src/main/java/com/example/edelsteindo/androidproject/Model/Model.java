@@ -123,6 +123,7 @@ public class Model {
 
             @Override
             public void onCancel() {
+
                 callback.onCancel();
             }
         });
